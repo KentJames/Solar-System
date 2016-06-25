@@ -34,7 +34,7 @@ var options = new function(){
 
   this.OrbitSpeedMultiplier= 10.0;
   this.ShowOrbitOutline = true;
-  this.HighlightPlanets = false;
+  this.HighlightPlanets = true;
   this.PlanetScale = 10;
   this.OrbitScale = 0.02;
   this.CameraFocus = 'Sun';
