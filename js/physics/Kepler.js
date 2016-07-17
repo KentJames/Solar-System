@@ -24,7 +24,7 @@ function CalculateN(semimajor_axis){
   
 };
 */
-// Uses Three.js clock. Substitute Clock.getelapsedTime with whatever your chosen timing engine is!
+// Uses Three.js clock. Substitute Clock.getElapsedTime with whatever your chosen timing engine is!
 function CalculateMT(n,t){
   
   var Mt = n*(Clock.getElapsedTime())*SCALING_TIME;
