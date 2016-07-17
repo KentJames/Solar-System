@@ -7,21 +7,23 @@
 // Link: http://murison.alpheratz.net/dynamics/twobody/KeplerIterations_summary.pdf
 //
 
-var SCALING_TIME = 10.0;
+var SCALING_TIME = 1.0;
 
-function CalculateOrbitalPeriod(semimajor_axis){
+function CalculateN(semimajor_axis){
 
-  var Orbital_Period = ((2*Math.PI*(Math.sqrt(Math.pow(semimajor_axis,3)/(GRAV_CONSTANT*SUN_MASS))))/1000)*SECONDS_IN_YEAR;
+  var Orbital_Period = (1/((Math.sqrt(Math.pow(semimajor_axis,3)*1000)*((4*Math.pow(Math.PI,2))/(GRAV_CONSTANT*SUN_MASS)))))/SECONDS_IN_YEAR;
   return(Orbital_Period);
 
-};
-
+}; 
+//Work out why this is wrong?? I remember doing it but looking back I can't think why
+/*
 function CalculateN(semimajor_axis){
   
   var N = (Math.sqrt((GRAV_CONSTANT*SUN_MASS)/(Math.pow(semimajor_axis,3))));
   return(N);
   
 };
+*/
 // Uses Three.js clock. Substitute Clock.getelapsedTime with whatever your chosen timing engine is!
 function CalculateMT(n,t){
   

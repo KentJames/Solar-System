@@ -2,7 +2,8 @@
 
 //Things to do:
 
-// Volumetric lighting from sun? Could try it.
+// Work on sun effects a bit more.
+// Add more stuff: Rings, asteroids? Perhaps a few famous comets?
 // Calculate orbits by Keplers Law.Partially done! Things to do:
 // Longitude of the Ascending Node.
 // Argument of Periapsis
@@ -20,10 +21,10 @@ var scene, camera, controls, renderer; // The basics
 var camera_position = new THREE.Vector3(0,0,0); // Define where the camera is pointing at.
 var lights = [];
 var mercury_group, mercury_group_orbit,venus_group, venus_group_orbit,
-earth_group, earth_group_orbit, mars_group, mars_group_orbit, jupiter_group, jupiter_group_orbit,  saturn_group, saturn_group_orbit,
+earth_group, earth_group_orbit, earth_local_system, mars_group, mars_group_orbit, jupiter_group, jupiter_group_orbit,  saturn_group, saturn_group_orbit, saturn_local_system,
 neptune_group, neptune_group_orbit, uranus_group, uranus_group_orbit, pluto_group, pluto_group_orbit,sun_group,
 skybox, orbit_outlines; // 3D objects and groups. Hierarchy is (in descending order of importance) orbit_group > planet_group. Sun and skybox group are special exceptions.
-
+// ^^^^^^^^^^ I must do this in a generic way but ugh re-architecting, hindsight how blessed are thee 
 // Setup FPS/Render Time/Memory usage monitor
 var stats_fps = new Stats();
 
@@ -32,10 +33,10 @@ var stats_fps = new Stats();
 var datGUI;
 var options = new function(){
 
-  this.OrbitSpeedMultiplier= 10.0;
+  this.OrbitSpeedMultiplier= 1.0;
   this.ShowOrbitOutline = true;
   this.HighlightPlanets = true;
-  this.PlanetScale = 10;
+  this.PlanetScale = 1;
   this.OrbitScale = 0.02;
   this.CameraFocus = 'Sun';
   this.Render_Updated_Scaling = function(){UpdateScene();};
@@ -68,6 +69,8 @@ VENUS_HELIOCENTRIC_INCLINATION);
 
 var Earth= new Planet(EARTH_SIZE,EARTH_MASS,EARTH_SEMIMAJOR_AXIS,EARTH_SEMIMINOR_AXIS,EARTH_ECCENTRICITY,
 EARTH_HELIOCENTRIC_INCLINATION);
+
+var Earth_Moon = new Planet(EARTH_MOON_SIZE,EARTH_MOON_MASS,EARTH_MOON_SEMIMAJOR_AXIS,EARTH_MOON_SEMIMINOR_AXIS,EARTH_MOON_ECCENTRICITY,EARTH_MOON_HELIOCENTRIC_INCLINATION);
 
 var Mars = new Planet(MARS_SIZE,MARS_MASS,MARS_SEMIMAJOR_AXIS,MARS_SEMIMINOR_AXIS,MARS_ECCENTRICITY,
 MARS_HELIOCENTRIC_INCLINATION);
@@ -104,7 +107,7 @@ function init(){
   
   //Setup camera and mouse controls.
   camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight,100,3e8);
-  camera.position.x=3000;
+  //camera.position.x=3000;
   controls = new THREE.OrbitControls( camera );
   controls.rotateSpeed = 1.0;
   controls.zoomSpeed = 0.5;
@@ -128,7 +131,7 @@ function init(){
   
 
   var PlanetFolder = datGUI.addFolder("Planet Parameters");
-  PlanetFolder.add(options,'PlanetScale',1,300);
+  PlanetFolder.add(options,'PlanetScale',1,30);
   var HighlightPlanets = PlanetFolder.add(options,'HighlightPlanets');
   
   var DebugFolder = datGUI.addFolder("Debug");
@@ -183,7 +186,9 @@ function init(){
 
   earth_group_orbit = new THREE.Object3D();
   earth_group = new THREE.Group();
-  earth_group_orbit.add(earth_group)
+  earth_local_system = new THREE.Group();
+  earth_group.add(earth_local_system);
+  earth_group_orbit.add(earth_group);
 
   venus_group_orbit=new THREE.Object3D();
   venus_group = new THREE.Group();
@@ -199,7 +204,10 @@ function init(){
   
   saturn_group_orbit = new THREE.Object3D();
   saturn_group = new THREE.Group();
+  saturn_local_system = new THREE.Group();
+  saturn_group.add(saturn_local_system);
   saturn_group_orbit.add(saturn_group);
+  
   
   uranus_group_orbit = new THREE.Object3D();
   uranus_group = new THREE.Group();
@@ -297,6 +305,7 @@ function init(){
 
   earth_group.add(CreateSphere('./textures/earth_atmos_4096.jpg',(Earth.size),50,"Earth"));
   earth_group.add(CreateTransparentSphere(TRANSPARENT_SPHERE_SIZE,50,TRANSPARENT_SPHERE_NAME));
+  earth_local_system.add(CreateSphere('./textures/moon_map.jpg',Earth_Moon.size,50,"Moon"));
 
   mars_group.add(CreateSphere('./textures/mars.jpg',(Mars.size),50,"Mars"));
   mars_group.add(CreateTransparentSphere(TRANSPARENT_SPHERE_SIZE,50,TRANSPARENT_SPHERE_NAME));
@@ -438,7 +447,8 @@ function UpdateCameraLocation(){
         camera_position.x=mercury_group.position.x;
         camera_position.y=mercury_group.position.y;
         camera_position.z=mercury_group.position.z;
-        break;
+        break; 
+        //mercury_group.add(camera);
      case 'Venus':
         controls.minDistance=100;
         camera_position.x=venus_group.position.x;
@@ -574,6 +584,7 @@ function update(){
   AdjustPlanetLocation(mercury_group,Mercury);
   AdjustPlanetLocation(venus_group,Venus);
   AdjustPlanetLocation(earth_group,Earth);
+  AdjustPlanetLocation(earth_local_system,Earth_Moon);
   AdjustPlanetLocation(mars_group,Mars);
   AdjustPlanetLocation(jupiter_group,Jupiter);
   AdjustPlanetLocation(saturn_group,Saturn);
