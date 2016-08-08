@@ -894,6 +894,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 	scope.domElement.addEventListener( 'mousedown', onMouseDown, false );
 	scope.domElement.addEventListener( 'mousewheel', onMouseWheel, false );
+	scope.domElement.addEventListener( 'wheel', onMouseWheel, false); // mousewheel is deprecated, so added this for new standard 'wheel' event.
 	scope.domElement.addEventListener( 'MozMousePixelScroll', onMouseWheel, false ); // firefox
 
 	scope.domElement.addEventListener( 'touchstart', onTouchStart, false );

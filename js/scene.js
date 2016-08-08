@@ -24,7 +24,7 @@ var mercury_group, mercury_group_orbit,venus_group, venus_group_orbit,
 earth_group, earth_group_orbit, earth_local_system, mars_group, mars_group_orbit, jupiter_group, jupiter_group_orbit,  saturn_group, saturn_group_orbit, saturn_local_system,
 neptune_group, neptune_group_orbit, uranus_group, uranus_group_orbit, pluto_group, pluto_group_orbit,sun_group,
 skybox, orbit_outlines; // 3D objects and groups. Hierarchy is (in descending order of importance) orbit_group > planet_group. Sun and skybox group are special exceptions.
-// ^^^^^^^^^^ I must do this in a generic way but ugh re-architecting, hindsight how blessed are thee 
+// ^^^^^^^^^^ I must do this in a generic way but ugh re-architecting, hindsight how blessed art thou 
 // Setup FPS/Render Time/Memory usage monitor
 var stats_fps = new Stats();
 
