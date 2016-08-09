@@ -361,6 +361,7 @@ function CreateSphere(texture_u,radius,polygon_count,name,basic){
 
 };
 
+// Creates the orbital outlines on the scene.
 function CreateOrbitalLine(color,semimajor_axis,semiminor_axis,periapsis,orbital_inclination){
   
   var linematerial = new THREE.LineBasicMaterial({color: color});
@@ -567,7 +568,7 @@ function render() {
 };
 
 
-// This encapsulates the majority of the physics and animations.
+// This encapsulates the majority of the physics and animations. Helpful to profile performance in chrome dev tools.
 function update(){
   
   
@@ -593,7 +594,7 @@ function update(){
   AdjustPlanetLocation(pluto_group,Pluto);  
   
   
-  //Scale Planets. This can definitely be optimised. Optimise once per scaling update instead of once per frame.
+  //Scale Planets. This can definitely be optimised but not an issue atm. Optimise once per scaling update instead of once per frame.
  
   ScalePlanet("Mercury",mercury_group,options.PlanetScale);
   ScalePlanet("Venus",venus_group,options.PlanetScale);
