@@ -1,63 +1,54 @@
-{"Scene": {
-    "Sun": {
-      "texture": "./textures/sun_atmos.jpg",
-      "cloud_map": "./textures/sun_cloud_map.jpg"
-    },
-    "Skybox":{
-      "texture": "./textures/milkyway.jpg",
-      "size": 1e8,
-      "name": "Skybox"
-
-    },
-    "Orbit_Outlines":{
-      
-    },
-    "Mercury_Group_Orbit": {
-      "Mercury_Group": {
-      
-      }
-    },
-    "Venus_Group_Orbit": {
-      "Venus_Group":{
-      }
-    },
-    "Earth_Group_Orbit": {
-      "Earth_Group":{
-        "Earth_Local_System":{
-          
-        }
-      }
-    },
-    "Mars_Group_Orbit":{
-      "Mars_Group":{
+{
+  "Scene": {
+    "Children": [
+      {
+        "Name": "Skybox_Group_Orbit",
+        "Texture":"./textures/milkyway.jpg",
+        "Children": null
+      },
+      {
+        "Name": "Mercury_Group_Orbit",
+        "Children": [{"Name": "Mercury_Group"}]
         
+      },
+      {
+        "Name": "Venus_Group_Orbit",
+        "Children": [{"Name": "Venus_Group"}]
+      },
+      {
+        "Name": "Earth_Group_Orbit",
+        "Children": [{"Name": "Earth_Group",
+          "Children": [{"Name":"Earth_Local_System"}]
+        }]
+      },
+      {
+        "Name": "Mars_Group_Orbit",
+        "Children": [{"Name": "Mars_Group"}]
+      },
+      {
+        "Name": "Jupiter_Group_Orbit",
+        "Children": [{"Name": "Jupiter_Group",
+          "Children": [{"Name":"Jupiter_Local_system"}]
+          }]
+      },
+      {
+        "Name": "Saturn_Group_Orbit",
+        "Children": [{"Name": "Saturn_Group",
+          "Children":[{"Name":"Saturn_Local_System"}]
+          }]
+      },
+      {
+        "Name": "Uranus_Group_Orbit",
+        "Children": [{"Name": "Uranus_Group"}]
+      },
+      {
+        "Name": "Neptune_Group_Orbit",
+        "Children": [{"Name": "Neptune_Group"}]
+      },
+      {
+        "Name": "Pluto_Group_Orbit",
+        "Children": [{"Name": "Pluto_Group"}]
       }
-    },
-    "Jupiter_Group_Orbit":{
-      "Jupiter_Group":{
-        
-      }
-    },
-    "Saturn_Group_Orbit":{
-      "Saturn_Group":{
-        
-      }
-    },
-    "Uranus_Group_Orbit":{
-      "Uranus_Group":{
-        
-      }
-    },
-    "Neptune_Group_Orbit":{
-      "Neptune_Group":{
-        
-      }
-    },
-    "Pluto_Group_Orbit":{
-      "Pluto_Group":{
-        
-      }
-    }
+    ]
   }
 }
-

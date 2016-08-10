@@ -134,7 +134,7 @@ function init(){
   var Camera_Focus = datGUI.add(options,'CameraFocus',['Sun','Mercury','Venus','Earth','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto']);
   
   var OrbitalFolder = datGUI.addFolder("Orbital Parameters");
-  OrbitalFolder.add(options,'OrbitSpeedMultiplier',1.0,50.0);
+  OrbitalFolder.add(options,'OrbitSpeedMultiplier',0.0,50.0);
   var ShowOutlines = OrbitalFolder.add(options,'ShowOrbitOutline');
   
 
@@ -521,7 +521,7 @@ function UpdateCameraLocation(){
 
 
 
-// Takes a planet_group in and planet physical object, and adjusts the position in the scene.
+// Takes a planet_group in and planet physics object, and adjusts the position in the scene.
 function AdjustPlanetLocation(group,planet){
   
   var y = planet.semimajor_axis_scene()*Math.sin(planet.orbital_inclination*(Math.PI/180)) * Math.sin(planet.true_anamoly());

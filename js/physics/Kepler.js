@@ -7,7 +7,8 @@
 // Link: http://murison.alpheratz.net/dynamics/twobody/KeplerIterations_summary.pdf
 //
 
-var SCALING_TIME = 1.0;
+var SCALING_TIME = 0.1; // Set by GUI
+const SET_SCALING_TIME = 0.1; //Equalizer as physics has a tendency to run a bit fast.
 
 function CalculateN(semimajor_axis){
 
@@ -27,7 +28,7 @@ function CalculateN(semimajor_axis){
 // Uses Three.js clock. Substitute Clock.getElapsedTime with whatever your chosen timing engine is!
 function CalculateMT(n,t){
   
-  var Mt = n*(Clock.getElapsedTime())*SCALING_TIME;
+  var Mt = n*(Clock.getElapsedTime())*SCALING_TIME*SET_SCALING_TIME;
   return(Mt);
 };
 

@@ -3,19 +3,23 @@
 
 // Load JSON file and parse it to an object.
 var JSON_Request = new XMLHttpRequest();
-JSON_Request.open("GET","./js/document-2.json",false);
+JSON_Request.open("GET","./js/scene_description.json",false);
 JSON_Request.send(null);
 var my_JSON_object = JSON.parse(JSON_Request.responseText);
 console.log(my_JSON_object);
 
 
-function LogtoConsole(data){
-    console.log(data);
+function LogtoConsole(node){
+    console.log(node.Name);
     return
 }
 
-function AppendtoBody(data){
-    $('body').append('<div>' + data)
+function AppendtoBody(node){
+    $('body').append('<div>' + node.Name)
+}
+
+function LogObjectProperties(node){
+    
 }
 
 //A recursive depth-first search parse for my JSON tree! 
@@ -30,7 +34,7 @@ function RecursiveTreeParse(JsonTree,callback){
     for(var i = 0;i < Children.length;i++){
 
         RecursiveTreeParse(Children[i].Children,callback);
-        if(typeof callback=='function')callback(Children[i].Name);
+        if(typeof callback=='function')callback(Children[i]);
 
     }
 }
