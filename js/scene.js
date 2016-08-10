@@ -20,6 +20,13 @@ var TRANSPARENT_SPHERE_SCALE_FACTOR = 250;
 var scene, camera, controls, renderer; // The basics
 var camera_position = new THREE.Vector3(0,0,0); // Define where the camera is pointing at.
 var lights = [];
+var scene_tree;
+
+var JSON_Request = new XMLHttpRequest();
+JSON_Request.open("GET","./js/document-2.json",false);
+JSON_Request.send(null);
+var my_JSON_object = JSON.parse(JSON_Request.responseText);
+console.log(my_JSON_object);
 var mercury_group, mercury_group_orbit,venus_group, venus_group_orbit,
 earth_group, earth_group_orbit, earth_local_system, mars_group, mars_group_orbit, jupiter_group, jupiter_group_orbit,  saturn_group, saturn_group_orbit, saturn_local_system,
 neptune_group, neptune_group_orbit, uranus_group, uranus_group_orbit, pluto_group, pluto_group_orbit,sun_group,
@@ -60,7 +67,7 @@ var options = new function(){
 
 
 
-// These objects handle the physical and orbital properties and physics
+// These objects handle the physical and orbital properties and physics. This is seperate from the rendered objects.
 var Mercury = new Planet(MERCURY_SIZE,MERCURY_MASS,MERCURY_SEMIMAJOR_AXIS,MERCURY_SEMIMINOR_AXIS,MERCURY_ECCENTRICITY,
 MERCURY_HELIOCENTRIC_INCLINATION,MERCURY_MEAN_ANAMOLY_EPOCH);
 
@@ -86,6 +93,7 @@ URANUS_HELIOCENTRIC_INCLINATION,URANUS_MEAN_ANAMOLY_EPOCH);
 
 var Neptune = new Planet(NEPTUNE_SIZE,NEPTUNE_MASS,NEPTUNE_SEMIMAJOR_AXIS,NEPTUNE_SEMIMINOR_AXIS,NEPTUNE_ECCENTRICITY,
 NEPTUNE_HELIOCENTRIC_INCLINATION,NEPTUNE_MEAN_ANAMOLY_EPOCH);
+
 var Pluto = new Planet(PLUTO_SIZE,PLUTO_MASS,PLUTO_SEMIMAJOR_AXIS,PLUTO_SEMIMINOR_AXIS,PLUTO_ECCENTRICITY,
 PLUTO_HELIOCENTRIC_INCLINATION,PLUTO_MEAN_ANAMOLY_EPOCH);
 
@@ -102,11 +110,11 @@ function init(){
   stats_fps.showPanel(0);
 
   //Setup Renderer!
-  renderer = new THREE.WebGLRenderer({antialias: false, logarithmicDepthBuffer: false});
+  renderer = new THREE.WebGLRenderer({antialias: false, logarithmicDepthBuffer: false}); // Logarithmic depth buffer set to true causes severe shader artifacts.
   renderer.setSize(window.innerWidth, window.innerHeight);
   
   //Setup camera and mouse controls.
-  camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight,100,3e8);
+  camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight,10,3e8);
   //camera.position.x=3000;
   controls = new THREE.OrbitControls( camera );
   controls.rotateSpeed = 1.0;
@@ -163,7 +171,7 @@ function init(){
   document.body.appendChild(renderer.domElement);
   document.body.appendChild(stats_fps.dom);
 
-
+  
 
   //Setup lights...
   scene = new THREE.Scene();
@@ -174,51 +182,53 @@ function init(){
   scene.add(lights[ 1 ]);
 
 
+
+
   //Setup planet objects...
-  skybox_group = new THREE.Group();
-  sun_group = new THREE.Group();
+  skybox_group = new THREE.Object3D();
+  sun_group = new THREE.Object3D();
   orbit_outlines = new THREE.Object3D();
 
   mercury_group_orbit = new THREE.Object3D();
-  mercury_group = new THREE.Group();
+  mercury_group = new THREE.Object3D();
 //  mercury_transparent_group = new THREE.Group();
   mercury_group_orbit.add(mercury_group);
 
   earth_group_orbit = new THREE.Object3D();
-  earth_group = new THREE.Group();
-  earth_local_system = new THREE.Group();
+  earth_group = new THREE.Object3D();
+  earth_local_system = new THREE.Object3D();
   earth_group.add(earth_local_system);
   earth_group_orbit.add(earth_group);
 
   venus_group_orbit=new THREE.Object3D();
-  venus_group = new THREE.Group();
+  venus_group = new THREE.Object3D();
   venus_group_orbit.add(venus_group);
 
   mars_group_orbit = new THREE.Object3D();
-  mars_group = new THREE.Group();
+  mars_group = new THREE.Object3D();
   mars_group_orbit.add(mars_group);
   
   jupiter_group_orbit = new THREE.Object3D();
-  jupiter_group = new THREE.Group();
+  jupiter_group = new THREE.Object3D();
   jupiter_group_orbit.add(jupiter_group);
   
   saturn_group_orbit = new THREE.Object3D();
-  saturn_group = new THREE.Group();
-  saturn_local_system = new THREE.Group();
+  saturn_group = new THREE.Object3D();
+  saturn_local_system = new THREE.Object3D();
   saturn_group.add(saturn_local_system);
   saturn_group_orbit.add(saturn_group);
   
   
   uranus_group_orbit = new THREE.Object3D();
-  uranus_group = new THREE.Group();
+  uranus_group = new THREE.Object3D();
   uranus_group_orbit.add(uranus_group);
   
   neptune_group_orbit = new THREE.Object3D();
-  neptune_group = new THREE.Group();
+  neptune_group = new THREE.Object3D();
   neptune_group_orbit.add(neptune_group);
   
   pluto_group_orbit = new THREE.Object3D();
-  pluto_group = new THREE.Group();
+  pluto_group = new THREE.Object3D();
   pluto_group_orbit.add(pluto_group);
 
   scene.add(skybox_group);
