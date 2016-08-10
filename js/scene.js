@@ -7,7 +7,7 @@
 // Calculate orbits by Keplers Law.Partially done! Things to do:
 // Longitude of the Ascending Node.
 // Argument of Periapsis
-// Mean anamoly at epoch
+
 
 
 //Define Geometry
@@ -24,7 +24,7 @@ var mercury_group, mercury_group_orbit,venus_group, venus_group_orbit,
 earth_group, earth_group_orbit, earth_local_system, mars_group, mars_group_orbit, jupiter_group, jupiter_group_orbit,  saturn_group, saturn_group_orbit, saturn_local_system,
 neptune_group, neptune_group_orbit, uranus_group, uranus_group_orbit, pluto_group, pluto_group_orbit,sun_group,
 skybox, orbit_outlines; // 3D objects and groups. Hierarchy is (in descending order of importance) orbit_group > planet_group. Sun and skybox group are special exceptions.
-// ^^^^^^^^^^ I must do this in a generic way but ugh re-architecting, hindsight how blessed are thee 
+// ^^^^^^^^^^ I must do this in a generic way but ugh re-architecting, hindsight how blessed art thou 
 // Setup FPS/Render Time/Memory usage monitor
 var stats_fps = new Stats();
 
@@ -62,32 +62,32 @@ var options = new function(){
 
 // These objects handle the physical and orbital properties and physics
 var Mercury = new Planet(MERCURY_SIZE,MERCURY_MASS,MERCURY_SEMIMAJOR_AXIS,MERCURY_SEMIMINOR_AXIS,MERCURY_ECCENTRICITY,
-MERCURY_HELIOCENTRIC_INCLINATION);
+MERCURY_HELIOCENTRIC_INCLINATION,MERCURY_MEAN_ANAMOLY_EPOCH);
 
 var Venus = new Planet(VENUS_SIZE,VENUS_MASS,VENUS_SEMIMAJOR_AXIS,VENUS_SEMIMINOR_AXIS,VENUS_ECCENTRICITY,
-VENUS_HELIOCENTRIC_INCLINATION);
+VENUS_HELIOCENTRIC_INCLINATION,VENUS_MEAN_ANAMOLY_EPOCH);
 
 var Earth= new Planet(EARTH_SIZE,EARTH_MASS,EARTH_SEMIMAJOR_AXIS,EARTH_SEMIMINOR_AXIS,EARTH_ECCENTRICITY,
-EARTH_HELIOCENTRIC_INCLINATION);
+EARTH_HELIOCENTRIC_INCLINATION,EARTH_MEAN_ANAMOLY_EPOCH);
 
 var Earth_Moon = new Planet(EARTH_MOON_SIZE,EARTH_MOON_MASS,EARTH_MOON_SEMIMAJOR_AXIS,EARTH_MOON_SEMIMINOR_AXIS,EARTH_MOON_ECCENTRICITY,EARTH_MOON_HELIOCENTRIC_INCLINATION);
 
 var Mars = new Planet(MARS_SIZE,MARS_MASS,MARS_SEMIMAJOR_AXIS,MARS_SEMIMINOR_AXIS,MARS_ECCENTRICITY,
-MARS_HELIOCENTRIC_INCLINATION);
+MARS_HELIOCENTRIC_INCLINATION,MARS_MEAN_ANAMOLY_EPOCH);
 
 var Jupiter = new Planet(JUPITER_SIZE,JUPITER_MASS,JUPITER_SEMIMAJOR_AXIS,JUPITER_SEMIMINOR_AXIS,JUPITER_ECCENTRICITY,
-JUPITER_HELIOCENTRIC_INCLINATION);
+JUPITER_HELIOCENTRIC_INCLINATION,JUPITER_MEAN_ANAMOLY_EPOCH);
 
 var Saturn = new Planet(SATURN_SIZE,SATURN_MASS,SATURN_SEMIMAJOR_AXIS,SATURN_SEMIMINOR_AXIS,SATURN_ECCENTRICITY,
-SATURN_HELIOCENTRIC_INCLINATION);
+SATURN_HELIOCENTRIC_INCLINATION,SATURN_MEAN_ANAMOLY_EPOCH);
 
 var Uranus = new Planet(URANUS_SIZE,URANUS_MASS,URANUS_SEMIMAJOR_AXIS,URANUS_SEMIMINOR_AXIS,URANUS_ECCENTRICITY,
-URANUS_HELIOCENTRIC_INCLINATION);
+URANUS_HELIOCENTRIC_INCLINATION,URANUS_MEAN_ANAMOLY_EPOCH);
 
 var Neptune = new Planet(NEPTUNE_SIZE,NEPTUNE_MASS,NEPTUNE_SEMIMAJOR_AXIS,NEPTUNE_SEMIMINOR_AXIS,NEPTUNE_ECCENTRICITY,
-NEPTUNE_HELIOCENTRIC_INCLINATION);
+NEPTUNE_HELIOCENTRIC_INCLINATION,NEPTUNE_MEAN_ANAMOLY_EPOCH);
 var Pluto = new Planet(PLUTO_SIZE,PLUTO_MASS,PLUTO_SEMIMAJOR_AXIS,PLUTO_SEMIMINOR_AXIS,PLUTO_ECCENTRICITY,
-PLUTO_HELIOCENTRIC_INCLINATION);
+PLUTO_HELIOCENTRIC_INCLINATION,PLUTO_MEAN_ANAMOLY_EPOCH);
 
 
 
@@ -361,6 +361,7 @@ function CreateSphere(texture_u,radius,polygon_count,name,basic){
 
 };
 
+// Creates the orbital outlines on the scene.
 function CreateOrbitalLine(color,semimajor_axis,semiminor_axis,periapsis,orbital_inclination){
   
   var linematerial = new THREE.LineBasicMaterial({color: color});
@@ -567,7 +568,7 @@ function render() {
 };
 
 
-// This encapsulates the majority of the physics and animations.
+// This encapsulates the majority of the physics and animations. Helpful to profile performance in chrome dev tools.
 function update(){
   
   
@@ -593,7 +594,7 @@ function update(){
   AdjustPlanetLocation(pluto_group,Pluto);  
   
   
-  //Scale Planets. This can definitely be optimised. Optimise once per scaling update instead of once per frame.
+  //Scale Planets. This can definitely be optimised but not an issue atm. Optimise once per scaling update instead of once per frame.
  
   ScalePlanet("Mercury",mercury_group,options.PlanetScale);
   ScalePlanet("Venus",venus_group,options.PlanetScale);
