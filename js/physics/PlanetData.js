@@ -36,91 +36,191 @@ function Planet(size,mass,semimajor_axis,semiminor_axis,orbital_eccentricity,orb
 };
 
 
-const MERCURY_SIZE = 2.4;
-const MERCURY_SEMIMAJOR_AXIS = 5.791e7; // 57.91e6 in reality...
-const MERCURY_SEMIMINOR_AXIS = 5.667e7;
-const MERCURY_ECCENTRICITY = 0.21;
-const MERCURY_MASS = 3.285e23;
-const MERCURY_HELIOCENTRIC_INCLINATION = 7;
-const MERCURY_MEAN_ANAMOLY_EPOCH = 252.25;
 
-const VENUS_SIZE = 6;
-const VENUS_SEMIMAJOR_AXIS = 108.2089e6;
-const VENUS_SEMIMINOR_AXIS = 108.2064e6;
-const VENUS_ECCENTRICITY = 0.0067;
-const VENUS_MASS = 4.867e24; 
-const VENUS_HELIOCENTRIC_INCLINATION = 3.86;
-const VENUS_MEAN_ANAMOLY_EPOCH = 181.98;
+function Planet_Gen(planet_obj,render_group){
+    
+    //This is for ES5 compatability in safari. Would prefer to use default parameters as ES6 defines it but Chrome/Firefox have basic support currently.
+    if(planet_obj.MEAN_ANAMOLY_EPOCH === undefined){
+        mean_anamoly_epoch = 0.0;
+    }
 
-
-const EARTH_SIZE = 6.1;
-const EARTH_SEMIMAJOR_AXIS = 149.598e6;
-const EARTH_SEMIMINOR_AXIS = 149.577e6;
-const EARTH_ECCENTRICITY = 0.0167;
-const EARTH_MASS = 5.972e24; 
-const EARTH_HELIOCENTRIC_INCLINATION = 7.155;
-const EARTH_MEAN_ANAMOLY_EPOCH = 100.46;
-
-const EARTH_MOON_SIZE = 1.73;
-const EARTH_MOON_SEMIMAJOR_AXIS = 0.384e6;
-const EARTH_MOON_SEMIMINOR_AXIS = 0.3633e6;
-const EARTH_MOON_ECCENTRICITY = 0.0549;
-const EARTH_MOON_MASS = 0.07346e24;
-const EARTH_MOON_HELIOCENTRIC_INCLINATION = 5.145;
-
-const MARS_SIZE = 3.4;
-const MARS_SEMIMAJOR_AXIS = 227.937e6;
-const MARS_SEMIMINOR_AXIS = 226.94e6;
-const MARS_ECCENTRICITY = 0.0934;
-const MARS_MASS = 6.417e23; 
-const MARS_HELIOCENTRIC_INCLINATION = 5.65;
-const MARS_MEAN_ANAMOLY_EPOCH = 355.45;
+    this.size = planet_obj.SIZE;
+    this.mass = planet_obj.MASS;
+    this.semimajor_axis = planet_obj.SEMIMAJOR_AXIS;
+    this.semiminor_axis = planet_obj.SEMIMINOR_AXIS;
+    this.orbital_eccentricity = planet_obj.ECCENTRICITY;
+    this.orbital_inclination = planet_obj.HELIOCENTRIC_INCLINATION;
+    this.mean_anamoly_epoch = planet_obj.MEAN_ANAMOLY_EPOCH*((Math.PI)/180); 
+    this.name = planet_obj.PLANET_NAME;
+    this.parent_group = render_group;
+    this.texture = planet_obj.TEXTURE;
 
 
-const JUPITER_SIZE = 69.9;
-const JUPITER_SEMIMAJOR_AXIS = 778e6;
-const JUPITER_SEMIMINOR_AXIS = 777.5e6;
-const JUPITER_ECCENTRICITY = 0.049;
-const JUPITER_MASS = 1.9e27; 
-const JUPITER_HELIOCENTRIC_INCLINATION = 6.09;
-const JUPITER_MEAN_ANAMOLY_EPOCH = 34.4;
+    //Create 3D Object to be rendered, and add it to the THREE Object3d group.
+    this.parent_group.add(CreateSphere(this.texture,(this.size),50,this.name));
+    this.parent_group.add(CreateTransparentSphere(TRANSPARENT_SPHERE_SIZE,50,TRANSPARENT_SPHERE_NAME));
+    
+    this.semimajor_axis_scene = function(){return(this.semimajor_axis/PLANET_SCALE)};
+    this.semiminor_axis_scene = function(){return(this.semiminor_axis/PLANET_SCALE)};
+    this.periapsis = function(){return(this.semimajor_axis*(1-this.orbital_eccentricity))};
+    this.apoapsis = function(){return(this.semimajor_axis*(1+this.orbital_eccentricity))};
+    this.periapsis_scene = function(){return(this.periapsis()/PLANET_SCALE)};
+    this.apoapsis_scene = function(){return(this.apoapsis()/PLANET_SCALE)};
+
+    this.eccentric_anamoly = function(){return( KeplerSolve(this.orbital_eccentricity,CalculateMT(CalculateN(this.semimajor_axis))))};
+    this.true_anamoly = function(){return(CalculateTrueAnamoly(this.eccentric_anamoly(),this.orbital_eccentricity,true)+this.mean_anamoly_epoch)};
+};
+
+var Planet_Prototype = {
+    SIZE: 0,
+    SEMIMAJOR_AXIS: 0,
+    SEMIMINOR_AXIS: 0,
+    ECCENTRICITY: 0,
+    MASS: 0,
+    HELIOCENTRIC_INCLINATION: 0,
+    MEAN_ANAMOLY_EPOCH: 0,
+    PLANET_NAME: "",
+    PLANET_TEXTURE: ""
+}
 
 
-const SATURN_SIZE = 58.2;
-const SATURN_SEMIMAJOR_AXIS = 1.427e9;
-const SATURN_SEMIMINOR_AXIS = 1.425e9;
-const SATURN_ECCENTRICITY = 0.0542;
-const SATURN_MASS = 5.683e26; 
-const SATURN_HELIOCENTRIC_INCLINATION = 5.51;
-const SATURN_MEAN_ANAMOLY_EPOCH = 49.94;
+var Mercury_Info = {
+    SIZE: 2.4,
+    SEMIMAJOR_AXIS: 5.791e7,
+    SEMIMINOR_AXIS: 5.667e7,
+    ECCENTRICITY: 0.21,
+    MASS: 3.285e23,
+    HELIOCENTRIC_INCLINATION: 7,
+    MEAN_ANAMOLY_EPOCH: 252.25,
+    BODY_NAME: "Mercury",
+    TEXTURE:'./textures/mercury.jpg'
+    
+};
+
+var Venus_Info = {
+    SIZE: 6,
+    SEMIMAJOR_AXIS: 108.2089e6,
+    SEMIMINOR_AXIS: 108.2064e6,
+    ECCENTRICITY: 0.0067,
+    MASS: 4.867e24,
+    HELIOCENTRIC_INCLINATION: 3.86,
+    MEAN_ANAMOLY_EPOCH: 181.98,
+    BODY_NAME: "Venus",
+    TEXTURE: './textures/venus.jpg'
+
+}
 
 
-const URANUS_SIZE = 25.36;
-const URANUS_SEMIMAJOR_AXIS = 2.871e9;
-const URANUS_SEMIMINOR_AXIS = 2.8678e9;
-const URANUS_ECCENTRICITY = 0.047167;
-const URANUS_MASS = 8.68103e25; 
-const URANUS_HELIOCENTRIC_INCLINATION = 6.48;
-const URANUS_MEAN_ANAMOLY_EPOCH = 313.23;
+var Earth_Info= {
+    SIZE: 6.1,
+    SEMIMAJOR_AXIS: 149.598e6,
+    SEMIMINOR_AXIS: 149.577e6,
+    ECCENTRICITY: 0.0167,
+    MASS: 5.972e24,
+    HELIOCENTRIC_INCLINATION: 7.155,
+    MEAN_ANAMOLY_EPOCH: 100.46,
+    BODY_NAME: "Earth",
+    TEXTURE: './textures/earth_atmos_4096.jpg'
+
+}
 
 
-const NEPTUNE_SIZE = 24.62;
-const NEPTUNE_SEMIMAJOR_AXIS = 4.495e9;
-const NEPTUNE_SEMIMINOR_AXIS = 4.495e9;
-const NEPTUNE_ECCENTRICITY = 0.00934;
-const NEPTUNE_MASS = 1e26; 
-const NEPTUNE_HELIOCENTRIC_INCLINATION = 6.43;
-const NEPTUNE_MEAN_ANAMOLY_EPOCH = 304.88;
+var Moon_Info= {
+    SIZE: 1.73,
+    SEMIMAJOR_AXIS: 0.384e6,
+    SEMIMINOR_AXIS: 0.3633e6,
+    ECCENTRICITY: 0.0549,
+    MASS: 0.07346e24,
+    HELIOCENTRIC_INCLINATION: 5.145,
+    MEAN_ANAMOLY_EPOCH: 0,
+    BODY_NAME: "Moon",
+    TEXTURE: './textures/moon_map.jpg'
 
-const PLUTO_SIZE = 1.186;
-const PLUTO_SEMIMAJOR_AXIS = 5.906e9;
-const PLUTO_SEMIMINOR_AXIS = 5.7203e9;
-const PLUTO_ECCENTRICITY = 0.2488;
-const PLUTO_MASS = 1.3e22; 
-const PLUTO_HELIOCENTRIC_INCLINATION = 17;
-const PLUTO_MEAN_ANAMOLY_EPOCH = 0; // Couldn't find any data on plutos mean anom at epoch :-(
+}
 
-/////////////////////////
+var Mars_Info= {
+    SIZE: 3.4,
+    SEMIMAJOR_AXIS: 227.937e6,
+    SEMIMINOR_AXIS: 226.94e6,
+    ECCENTRICITY: 0.0934,
+    MASS: 6.417e24,
+    HELIOCENTRIC_INCLINATION: 5.65,
+    MEAN_ANAMOLY_EPOCH: 355.45,
+    BODY_NAME: "Mars",
+    TEXTURE: './textures/mars.jpg'
+
+}
+
+var Jupiter_Info= {
+    SIZE: 69.9,
+    SEMIMAJOR_AXIS: 778e6,
+    SEMIMINOR_AXIS: 777.5e6,
+    ECCENTRICITY: 0.049,
+    MASS: 1.9e27,
+    HELIOCENTRIC_INCLINATION: 6.09,
+    MEAN_ANAMOLY_EPOCH: 34.4,
+    BODY_NAME: "Jupiter",
+    TEXTURE: './textures/jupiter.jpg'
+
+}
+
+var Saturn_Info= {
+    SIZE: 58.2,
+    SEMIMAJOR_AXIS: 1.427e9,
+    SEMIMINOR_AXIS: 1.425e9,
+    ECCENTRICITY: 0.0542,
+    MASS: 5.683e26,
+    HELIOCENTRIC_INCLINATION: 5.51,
+    MEAN_ANAMOLY_EPOCH: 49.94,
+    BODY_NAME: "Saturn",
+    TEXTURE: './textures/saturnmap.jpg'
+
+}
+
+
+
+var Uranus_Info= {
+    SIZE: 25.36,
+    SEMIMAJOR_AXIS: 2.871e9,
+    SEMIMINOR_AXIS: 2.8678e9,
+    ECCENTRICITY: 0.047167,
+    MASS: 8.68103e25,
+    HELIOCENTRIC_INCLINATION: 6.48,
+    MEAN_ANAMOLY_EPOCH: 313.23,
+    BODY_NAME: "Uranus",
+    TEXTURE: './textures/uranusmap.jpg'
+
+}
+
+
+var Neptune_Info= {
+    SIZE: 24.62,
+    SEMIMAJOR_AXIS: 4.495e9,
+    SEMIMINOR_AXIS: 4.495e9,
+    ECCENTRICITY: 0.00934,
+    MASS: 1e26,
+    HELIOCENTRIC_INCLINATION: 6.43,
+    MEAN_ANAMOLY_EPOCH: 304.88,
+    BODY_NAME: "Neptune",
+    TEXTURE: './textures/neptunemap.jpg'
+
+}
+
+
+var Pluto_Info= {
+    SIZE: 1.186,
+    SEMIMAJOR_AXIS: 5.986e9,
+    SEMIMINOR_AXIS: 5.7203e9,
+    ECCENTRICITY: 0.2488,
+    MASS: 1.3e22,
+    HELIOCENTRIC_INCLINATION: 17,
+    MEAN_ANAMOLY_EPOCH: 0,
+    BODY_NAME: "Pluto",
+    TEXTURE: './textures/plutobump2k.jpg'
+
+}
+
+
 
 
 

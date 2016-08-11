@@ -22,17 +22,16 @@ var camera_position = new THREE.Vector3(0,0,0); // Define where the camera is po
 var lights = [];
 var scene_tree;
 
-var JSON_Request = new XMLHttpRequest();
-JSON_Request.open("GET","./js/document-2.json",false);
-JSON_Request.send(null);
-var my_JSON_object = JSON.parse(JSON_Request.responseText);
-console.log(my_JSON_object);
+
 var mercury_group, mercury_group_orbit,venus_group, venus_group_orbit,
-earth_group, earth_group_orbit, earth_local_system, mars_group, mars_group_orbit, jupiter_group, jupiter_group_orbit,  saturn_group, saturn_group_orbit, saturn_local_system,
+earth_group, earth_group_orbit, earth_moon_group, mars_group, mars_group_orbit, jupiter_group, jupiter_group_orbit,  saturn_group, saturn_group_orbit, saturn_local_system,
 neptune_group, neptune_group_orbit, uranus_group, uranus_group_orbit, pluto_group, pluto_group_orbit,sun_group,
 skybox, orbit_outlines; // 3D objects and groups. Hierarchy is (in descending order of importance) orbit_group > planet_group. Sun and skybox group are special exceptions.
 // ^^^^^^^^^^ I must do this in a generic way but ugh re-architecting, hindsight how blessed art thou 
 // Setup FPS/Render Time/Memory usage monitor
+
+var Mercury,Venus,Earth,Moon,Mars,Jupiter,Saturn,Uranus,Neptune,Pluto;
+
 var stats_fps = new Stats();
 
 
@@ -67,35 +66,7 @@ var options = new function(){
 
 
 
-// These objects handle the physical and orbital properties and physics. This is seperate from the rendered objects.
-var Mercury = new Planet(MERCURY_SIZE,MERCURY_MASS,MERCURY_SEMIMAJOR_AXIS,MERCURY_SEMIMINOR_AXIS,MERCURY_ECCENTRICITY,
-MERCURY_HELIOCENTRIC_INCLINATION,MERCURY_MEAN_ANAMOLY_EPOCH);
-
-var Venus = new Planet(VENUS_SIZE,VENUS_MASS,VENUS_SEMIMAJOR_AXIS,VENUS_SEMIMINOR_AXIS,VENUS_ECCENTRICITY,
-VENUS_HELIOCENTRIC_INCLINATION,VENUS_MEAN_ANAMOLY_EPOCH);
-
-var Earth= new Planet(EARTH_SIZE,EARTH_MASS,EARTH_SEMIMAJOR_AXIS,EARTH_SEMIMINOR_AXIS,EARTH_ECCENTRICITY,
-EARTH_HELIOCENTRIC_INCLINATION,EARTH_MEAN_ANAMOLY_EPOCH);
-
-var Earth_Moon = new Planet(EARTH_MOON_SIZE,EARTH_MOON_MASS,EARTH_MOON_SEMIMAJOR_AXIS,EARTH_MOON_SEMIMINOR_AXIS,EARTH_MOON_ECCENTRICITY,EARTH_MOON_HELIOCENTRIC_INCLINATION);
-
-var Mars = new Planet(MARS_SIZE,MARS_MASS,MARS_SEMIMAJOR_AXIS,MARS_SEMIMINOR_AXIS,MARS_ECCENTRICITY,
-MARS_HELIOCENTRIC_INCLINATION,MARS_MEAN_ANAMOLY_EPOCH);
-
-var Jupiter = new Planet(JUPITER_SIZE,JUPITER_MASS,JUPITER_SEMIMAJOR_AXIS,JUPITER_SEMIMINOR_AXIS,JUPITER_ECCENTRICITY,
-JUPITER_HELIOCENTRIC_INCLINATION,JUPITER_MEAN_ANAMOLY_EPOCH);
-
-var Saturn = new Planet(SATURN_SIZE,SATURN_MASS,SATURN_SEMIMAJOR_AXIS,SATURN_SEMIMINOR_AXIS,SATURN_ECCENTRICITY,
-SATURN_HELIOCENTRIC_INCLINATION,SATURN_MEAN_ANAMOLY_EPOCH);
-
-var Uranus = new Planet(URANUS_SIZE,URANUS_MASS,URANUS_SEMIMAJOR_AXIS,URANUS_SEMIMINOR_AXIS,URANUS_ECCENTRICITY,
-URANUS_HELIOCENTRIC_INCLINATION,URANUS_MEAN_ANAMOLY_EPOCH);
-
-var Neptune = new Planet(NEPTUNE_SIZE,NEPTUNE_MASS,NEPTUNE_SEMIMAJOR_AXIS,NEPTUNE_SEMIMINOR_AXIS,NEPTUNE_ECCENTRICITY,
-NEPTUNE_HELIOCENTRIC_INCLINATION,NEPTUNE_MEAN_ANAMOLY_EPOCH);
-
-var Pluto = new Planet(PLUTO_SIZE,PLUTO_MASS,PLUTO_SEMIMAJOR_AXIS,PLUTO_SEMIMINOR_AXIS,PLUTO_ECCENTRICITY,
-PLUTO_HELIOCENTRIC_INCLINATION,PLUTO_MEAN_ANAMOLY_EPOCH);
+ 
 
 
 
@@ -196,8 +167,8 @@ function init(){
 
   earth_group_orbit = new THREE.Object3D();
   earth_group = new THREE.Object3D();
-  earth_local_system = new THREE.Object3D();
-  earth_group.add(earth_local_system);
+  earth_moon_group = new THREE.Object3D();
+  earth_group.add(earth_moon_group);
   earth_group_orbit.add(earth_group);
 
   venus_group_orbit=new THREE.Object3D();
@@ -242,7 +213,30 @@ function init(){
   scene.add(neptune_group_orbit);
   scene.add(pluto_group_orbit);
   scene.add(sun_group);
-  
+
+
+
+
+// Generate Planets. Objects handle physics as well as adding 3d object to scene.
+Mercury = new Planet_Gen(Mercury_Info,mercury_group);
+Venus = new Planet_Gen(Venus_Info,venus_group);
+Earth = new Planet_Gen(Earth_Info,earth_group);
+Mars = new Planet_Gen(Mars_Info,mars_group);
+Moon = new Planet_Gen(Moon_Info,earth_moon_group);
+Jupiter = new Planet_Gen(Jupiter_Info,jupiter_group);
+Saturn = new Planet_Gen(Saturn_Info,saturn_group);
+Uranus = new Planet_Gen(Uranus_Info,uranus_group)
+Neptune = new Planet_Gen(Neptune_Info,neptune_group);
+Pluto = new Planet_Gen(Pluto_Info,pluto_group);
+
+
+
+
+
+
+
+
+
 
 
   // Using a skydome instead of a skybox 
@@ -303,41 +297,19 @@ function init(){
     this.sunGlow.name = "sunGlow";
 	  sun_group.add( sunGlow );
 	
-    //sunGlow.position = moon.position;
-	//moonGlow.scale.multiplyScalar(1.2);
-
-
-  mercury_group.add(CreateSphere('./textures/mercury.jpg',(Mercury.size),50,"Mercury"));
-  mercury_group.add(CreateTransparentSphere(TRANSPARENT_SPHERE_SIZE,50,TRANSPARENT_SPHERE_NAME));
-
-  venus_group.add(CreateSphere('./textures/venus.jpg',(Venus.size),50,"Venus"));
-  venus_group.add(CreateTransparentSphere(TRANSPARENT_SPHERE_SIZE,50,TRANSPARENT_SPHERE_NAME));
-
-  earth_group.add(CreateSphere('./textures/earth_atmos_4096.jpg',(Earth.size),50,"Earth"));
-  earth_group.add(CreateTransparentSphere(TRANSPARENT_SPHERE_SIZE,50,TRANSPARENT_SPHERE_NAME));
-  earth_local_system.add(CreateSphere('./textures/moon_map.jpg',Earth_Moon.size,50,"Moon"));
-
-  mars_group.add(CreateSphere('./textures/mars.jpg',(Mars.size),50,"Mars"));
-  mars_group.add(CreateTransparentSphere(TRANSPARENT_SPHERE_SIZE,50,TRANSPARENT_SPHERE_NAME));
-  
-  jupiter_group.add(CreateSphere('./textures/jupiter.jpg',(Jupiter.size),50,"Jupiter"));
-  jupiter_group.add(CreateTransparentSphere(TRANSPARENT_SPHERE_SIZE,50,TRANSPARENT_SPHERE_NAME));
-  
-  saturn_group.add(CreateSphere('./textures/saturnmap.jpg',(Saturn.size),50,"Saturn"));
-  saturn_group.add(CreateTransparentSphere(TRANSPARENT_SPHERE_SIZE,50,TRANSPARENT_SPHERE_NAME));
-  
-  uranus_group.add(CreateSphere('./textures/uranusmap.jpg',(Uranus.size),50,"Uranus"));
-  uranus_group.add(CreateTransparentSphere(TRANSPARENT_SPHERE_SIZE,50,TRANSPARENT_SPHERE_NAME));
-
-  neptune_group.add(CreateSphere('./textures/neptunemap.jpg',(Neptune.size),50,"Neptune"));
-  neptune_group.add(CreateTransparentSphere(TRANSPARENT_SPHERE_SIZE,50,TRANSPARENT_SPHERE_NAME));
-  
-  pluto_group.add(CreateSphere('./textures/mercury.jpg',(Pluto.size),50,"Pluto"));
-  pluto_group.add(CreateTransparentSphere(TRANSPARENT_SPHERE_SIZE,50,TRANSPARENT_SPHERE_NAME));
   //Trace Orbits 
   
+  TraceOrbitOutlines();
   
-  
+
+
+  window.addEventListener('resize',onWindowResize,false);
+
+  render();
+};
+
+function TraceOrbitOutlines(){
+
   orbit_outlines.add(CreateOrbitalLine(0xae2300,Mercury.semimajor_axis_scene(),Mercury.semiminor_axis_scene(),Mercury.periapsis_scene(),Mercury.orbital_inclination));
   orbit_outlines.add(CreateOrbitalLine(0xff0000,Venus.semimajor_axis_scene(),Venus.semiminor_axis_scene(),Venus.periapsis_scene(),Venus.orbital_inclination));
   orbit_outlines.add(CreateOrbitalLine(0xff00ff,Earth.semimajor_axis_scene(),Earth.semiminor_axis_scene(),Earth.periapsis_scene(),Earth.orbital_inclination));
@@ -349,10 +321,9 @@ function init(){
   orbit_outlines.add(CreateOrbitalLine(0xffc7ff,Pluto.semimajor_axis_scene(),Pluto.semiminor_axis_scene(),Pluto.periapsis_scene(),Pluto.orbital_inclination));
   scene.add(orbit_outlines);
 
-  window.addEventListener('resize',onWindowResize,false);
 
-  render();
-};
+
+}
 
 function CreateSphere(texture_u,radius,polygon_count,name,basic){
 
@@ -432,12 +403,12 @@ function ScaleOverlaySpheres(sphere_name,object_group,distance_from_group,scale_
 }
 
 
-function ScalePlanet(sphere_name,object_group,scale_constant){
+function ScalePlanet(planet,scale_constant){
 
 
-  object_group.getObjectByName(sphere_name,true).scale.x = scale_constant;
-  object_group.getObjectByName(sphere_name,true).scale.y = scale_constant;
-  object_group.getObjectByName(sphere_name,true).scale.z = scale_constant;
+  planet.parent_group.getObjectByName(planet.name,true).scale.x = scale_constant;
+  planet.parent_group.getObjectByName(planet.name,true).scale.y = scale_constant;
+  planet.parent_group.getObjectByName(planet.name,true).scale.z = scale_constant;
 
 
 }
@@ -595,7 +566,7 @@ function update(){
   AdjustPlanetLocation(mercury_group,Mercury);
   AdjustPlanetLocation(venus_group,Venus);
   AdjustPlanetLocation(earth_group,Earth);
-  AdjustPlanetLocation(earth_local_system,Earth_Moon);
+  AdjustPlanetLocation(earth_moon_group,Moon);
   AdjustPlanetLocation(mars_group,Mars);
   AdjustPlanetLocation(jupiter_group,Jupiter);
   AdjustPlanetLocation(saturn_group,Saturn);
@@ -606,7 +577,16 @@ function update(){
   
   //Scale Planets. This can definitely be optimised but not an issue atm. Optimise once per scaling update instead of once per frame.
  
-  ScalePlanet("Mercury",mercury_group,options.PlanetScale);
+  ScalePlanet(Mercury,options.PlanetScale);
+  ScalePlanet(Venus,options.PlanetScale);
+  ScalePlanet(Earth,options.PlanetScale);
+  ScalePlanet(Mars,options.PlanetScale);
+  ScalePlanet(Jupiter,options.PlanetScale);
+  ScalePlanet(Saturn,options.PlanetScale);
+  ScalePlanet(Neptune,options.PlanetScale);
+  ScalePlanet(Uranus,options.PlanetScale);
+  ScalePlanet(Pluto,options.PlanetScale);
+  /*
   ScalePlanet("Venus",venus_group,options.PlanetScale);
   ScalePlanet("Earth",earth_group,options.PlanetScale);
   ScalePlanet("Mars",mars_group,options.PlanetScale);
@@ -615,7 +595,7 @@ function update(){
   ScalePlanet("Uranus",uranus_group,options.PlanetScale);
   ScalePlanet("Neptune",neptune_group,options.PlanetScale);
   ScalePlanet("Pluto",pluto_group,options.PlanetScale);
-  
+  */
   // Also can be optimised. Same as above.
   
   ScaleOverlaySpheres(TRANSPARENT_SPHERE_NAME,mercury_group,sun_group,TRANSPARENT_SPHERE_SCALE_FACTOR);

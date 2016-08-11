@@ -7,46 +7,48 @@
         "Children": null
       },
       {
-        "Name": "Mercury_Group_Orbit",
+        "Name": "Mercury_Orbit",
         "Children": [{"Name": "Mercury_Group"}]
         
       },
       {
-        "Name": "Venus_Group_Orbit",
-        "Children": [{"Name": "Venus_Group"}]
+        "Name": "Venus_Orbit",
+        "Children": [{"Name": "Venus_Group",
+        "Children":[{"Name":"Venus","Texture":"./textures/venus.jpg","Children":null}]}]
       },
       {
-        "Name": "Earth_Group_Orbit",
+        "Name": "Earth_Orbit",
         "Children": [{"Name": "Earth_Group",
-          "Children": [{"Name":"Earth_Local_System"}]
+          "Children": [{"Name":"Earth_Moon"},
+          {"Name":"Earth","Texture":"./textures/earth_atmos_4096.jpg","Children":null}]
         }]
       },
       {
-        "Name": "Mars_Group_Orbit",
+        "Name": "Mars_Orbit",
         "Children": [{"Name": "Mars_Group"}]
       },
       {
-        "Name": "Jupiter_Group_Orbit",
+        "Name": "Jupiter_Orbit",
         "Children": [{"Name": "Jupiter_Group",
           "Children": [{"Name":"Jupiter_Local_system"}]
           }]
       },
       {
-        "Name": "Saturn_Group_Orbit",
+        "Name": "Saturn_Orbit",
         "Children": [{"Name": "Saturn_Group",
           "Children":[{"Name":"Saturn_Local_System"}]
           }]
       },
       {
-        "Name": "Uranus_Group_Orbit",
+        "Name": "Uranus_Orbit",
         "Children": [{"Name": "Uranus_Group"}]
       },
       {
-        "Name": "Neptune_Group_Orbit",
+        "Name": "Neptune_Orbit",
         "Children": [{"Name": "Neptune_Group"}]
       },
       {
-        "Name": "Pluto_Group_Orbit",
+        "Name": "Pluto_Orbit",
         "Children": [{"Name": "Pluto_Group"}]
       }
     ]
