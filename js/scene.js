@@ -310,18 +310,18 @@ Pluto = new Planet_Gen(Pluto_Info,pluto_group);
 
 function TraceOrbitOutlines(){
 
-  orbit_outlines.add(CreateOrbitalLine(0xae2300,Mercury.semimajor_axis_scene(),Mercury.semiminor_axis_scene(),Mercury.periapsis_scene(),Mercury.orbital_inclination));
-  orbit_outlines.add(CreateOrbitalLine(0xff0000,Venus.semimajor_axis_scene(),Venus.semiminor_axis_scene(),Venus.periapsis_scene(),Venus.orbital_inclination));
-  orbit_outlines.add(CreateOrbitalLine(0xff00ff,Earth.semimajor_axis_scene(),Earth.semiminor_axis_scene(),Earth.periapsis_scene(),Earth.orbital_inclination));
-  orbit_outlines.add(CreateOrbitalLine(0xffff00,Mars.semimajor_axis_scene(),Mars.semiminor_axis_scene(),Mars.periapsis_scene(),Mars.orbital_inclination));
-  orbit_outlines.add(CreateOrbitalLine(0x00ff00,Jupiter.semimajor_axis_scene(),Jupiter.semiminor_axis_scene(),Jupiter.periapsis_scene(),Jupiter.orbital_inclination));
-  orbit_outlines.add(CreateOrbitalLine(0x0000ff,Saturn.semimajor_axis_scene(),Saturn.semiminor_axis_scene(),Saturn.periapsis_scene(),Saturn.orbital_inclination));
-  orbit_outlines.add(CreateOrbitalLine(0x00ffff,Uranus.semimajor_axis_scene(),Uranus.semiminor_axis_scene(),Uranus.periapsis_scene(),Uranus.orbital_inclination));
-  orbit_outlines.add(CreateOrbitalLine(0xffffff,Neptune.semimajor_axis_scene(),Neptune.semiminor_axis_scene(),Neptune.periapsis_scene(),Neptune.orbital_inclination));
-  orbit_outlines.add(CreateOrbitalLine(0xffc7ff,Pluto.semimajor_axis_scene(),Pluto.semiminor_axis_scene(),Pluto.periapsis_scene(),Pluto.orbital_inclination));
+  orbit_outlines.add(CreateOrbitalLine(0xae2300,Mercury.semimajor_axis_scene(),Mercury.semiminor_axis_scene(),Mercury.periapsis_scene(),Mercury.orbital_inclination,Mercury.longitude_ascending,Mercury.argument_periapsis,Mercury.orbital_eccentricity));
+  orbit_outlines.add(CreateOrbitalLine(0xff0000,Venus.semimajor_axis_scene(),Venus.semiminor_axis_scene(),Venus.periapsis_scene(),Venus.orbital_inclination,Venus.longitude_ascending,Venus.argument_periapsis,Venus.orbital_eccentricity));
+  orbit_outlines.add(CreateOrbitalLine(0xff00ff,Earth.semimajor_axis_scene(),Earth.semiminor_axis_scene(),Earth.periapsis_scene(),Earth.orbital_inclination,Earth.longitude_ascending,Earth.argument_periapsis,Earth.orbital_eccentricity));
+  orbit_outlines.add(CreateOrbitalLine(0xffff00,Mars.semimajor_axis_scene(),Mars.semiminor_axis_scene(),Mars.periapsis_scene(),Mars.orbital_inclination,Mars.longitude_ascending,Mars.argument_periapsis,Mars.orbital_eccentricity));
+  orbit_outlines.add(CreateOrbitalLine(0x00ff00,Jupiter.semimajor_axis_scene(),Jupiter.semiminor_axis_scene(),Jupiter.periapsis_scene(),Jupiter.orbital_inclination,Jupiter.longitude_ascending,Jupiter.argument_periapsis,Jupiter.orbital_eccentricity));
+  orbit_outlines.add(CreateOrbitalLine(0x0000ff,Saturn.semimajor_axis_scene(),Saturn.semiminor_axis_scene(),Saturn.periapsis_scene(),Saturn.orbital_inclination,Saturn.longitude_ascending,Saturn.argument_periapsis,Saturn.orbital_eccentricity));
+  orbit_outlines.add(CreateOrbitalLine(0x00ffff,Uranus.semimajor_axis_scene(),Uranus.semiminor_axis_scene(),Uranus.periapsis_scene(),Uranus.orbital_inclination,Uranus.longitude_ascending,Uranus.argument_periapsis,Uranus.orbital_eccentricity));
+  orbit_outlines.add(CreateOrbitalLine(0xffffff,Neptune.semimajor_axis_scene(),Neptune.semiminor_axis_scene(),Neptune.periapsis_scene(),Neptune.orbital_inclination,Neptune.longitude_ascending,Neptune.argument_periapsis,Neptune.orbital_eccentricity));
+  orbit_outlines.add(CreateOrbitalLine(0xffc7ff,Pluto.semimajor_axis_scene(),Pluto.semiminor_axis_scene(),Pluto.periapsis_scene(),Pluto.orbital_inclination,Pluto.longitude_ascending,Pluto.argument_periapsis,Pluto.orbital_eccentricity));
   scene.add(orbit_outlines);
 
-
+console.log(Mars.longitude_ascending);
 
 }
 
@@ -343,7 +343,7 @@ function CreateSphere(texture_u,radius,polygon_count,name,basic){
 };
 
 // Creates the orbital outlines on the scene.
-function CreateOrbitalLine(color,semimajor_axis,semiminor_axis,periapsis,orbital_inclination){
+function CreateOrbitalLine(color,semimajor_axis,semiminor_axis,periapsis,orbital_inclination,longitude_ascending,argument_periapsis,eccentricity){
   
   var linematerial = new THREE.LineBasicMaterial({color: color});
   var linegeometry = new THREE.Geometry();
@@ -352,10 +352,23 @@ function CreateOrbitalLine(color,semimajor_axis,semiminor_axis,periapsis,orbital
   for (var i = 0; i < ((2*Math.PI)+0.02); (i = i + 0.01)) {
 
     
-    
-    var y= semimajor_axis*Math.sin(i)*Math.sin(orbital_inclination*(Math.PI/180));
-    var x = (semimajor_axis*Math.cos(i) - (semimajor_axis - periapsis));
-    var z = semiminor_axis*Math.sin(i)*Math.cos(orbital_inclination*(Math.PI/180));
+/*
+    var y=  (semimajor_axis*Math.sin(i)*Math.sin(orbital_inclination*(Math.PI/180)));
+    var x = (semimajor_axis*Math.cos(i)) - (semimajor_axis - periapsis);
+    var z = (semiminor_axis*Math.sin(i)*Math.cos(orbital_inclination*(Math.PI/180)));
+/*
+/*
+X = R * (Cos(N) * Cos(TA + w) - Sin(N) * Sin(TA+w)*Cos(i) 
+Z = R * (Sin(N) * Cos(TA+w) + Cos(N) * Sin(TA+w)) * Cos(i)) 
+y = R * Sin(TA+w) * Sin(i)
+*/
+
+var R = semimajor_axis * (1-Math.pow(eccentricity,2))/(1+(eccentricity*Math.cos(i+argument_periapsis)));
+var y = R*Math.sin(i+argument_periapsis)*Math.sin(orbital_inclination);
+var x = R*(Math.cos(longitude_ascending)*Math.cos(i+argument_periapsis) - Math.sin(longitude_ascending)*Math.sin(i+argument_periapsis))*Math.cos(orbital_inclination);
+var z = R*(Math.sin(longitude_ascending)*Math.cos(i+argument_periapsis)+Math.cos(longitude_ascending)*Math.sin(i+argument_periapsis))*Math.cos(orbital_inclination);
+
+
     linegeometry.vertices.push(new THREE.Vector3(x,y,z));
       
   }
@@ -366,8 +379,6 @@ function CreateOrbitalLine(color,semimajor_axis,semiminor_axis,periapsis,orbital
   
   
 };
-
-
 
 function CreateTransparentSphere(radius,polygon_count,name){
 
@@ -490,17 +501,17 @@ function UpdateCameraLocation(){
 
 }
 
-
-
-// Takes a planet_group in and planet physics object, and adjusts the position in the scene.
+// Where the magic happens: Takes a planet_group in and planet physics object, and adjusts the position in the scene.
+// Uses eulers angles and astrodynamics to compute keplerian elements to cartesian co-ordinates. Google was very helpful with getting head round some of the maths.
 function AdjustPlanetLocation(group,planet){
   
-  var y = planet.semimajor_axis_scene()*Math.sin(planet.orbital_inclination*(Math.PI/180)) * Math.sin(planet.true_anamoly());
-  group.position.y = y;
-  group.position.x = planet.semimajor_axis_scene()*Math.cos(planet.true_anamoly()) - (planet.semimajor_axis_scene() - planet.periapsis_scene());
-  group.position.z = planet.semiminor_axis_scene()*Math.sin(planet.true_anamoly())*Math.cos(planet.orbital_inclination*(Math.PI/180));
+  //var y = planet.semimajor_axis_scene()*Math.sin(planet.orbital_inclination*(Math.PI/180)) * Math.sin(planet.true_anamoly());
+  var R = planet.semimajor_axis_scene() * (1-Math.pow(planet.orbital_eccentricity,2))/(1+(planet.orbital_eccentricity*Math.cos(planet.true_anamoly()+planet.argument_periapsis)));
+  group.position.y = R*Math.sin(planet.orbital_inclination) * Math.sin(planet.true_anamoly()+planet.argument_periapsis);
+  group.position.x = R*(Math.cos(planet.longitude_ascending)*Math.cos(planet.true_anamoly()+planet.argument_periapsis) - Math.sin(planet.longitude_ascending)*Math.sin(planet.true_anamoly()+planet.argument_periapsis))*Math.cos(planet.orbital_inclination);
+  group.position.z = R*(Math.sin(planet.longitude_ascending)*Math.cos(planet.true_anamoly()+planet.argument_periapsis)+Math.cos(planet.longitude_ascending)*Math.sin(planet.true_anamoly()+planet.argument_periapsis))*Math.cos(planet.orbital_inclination);
 
-  
+
 };
 
 
@@ -573,7 +584,7 @@ function update(){
   AdjustPlanetLocation(uranus_group,Uranus);
   AdjustPlanetLocation(neptune_group,Neptune);
   AdjustPlanetLocation(pluto_group,Pluto);  
-  
+ // console.log(mercury_group.position.z)
   
   //Scale Planets. This can definitely be optimised but not an issue atm. Optimise once per scaling update instead of once per frame.
  

@@ -41,4 +41,5 @@ function RecursiveTreeParse(JsonTree,callback){
 
 
 //Parse through all children.
+// Pass the tree that I parsed from the JSON file, and pass a callback function to operate on each element.
 RecursiveTreeParse(my_JSON_object.Scene.Children,AppendtoBody);
