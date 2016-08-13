@@ -54,14 +54,15 @@ function Planet_Gen(planet_obj,render_group){
     this.longitude_ascending = planet_obj.LONGITUDE_ASCENDING_NODE*((Math.PI)/180);
     this.argument_periapsis = planet_obj.ARGUMENT_OF_PERIAPSIS*((Math.PI)/180);
     this.mean_anamoly_epoch = planet_obj.MEAN_ANAMOLY_EPOCH*((Math.PI)/180); 
-    this.name = planet_obj.PLANET_NAME;
+    this.name = String(planet_obj.BODY_NAME);
     this.parent_group = render_group;
     this.texture = planet_obj.TEXTURE;
 
 
     //Create 3D Object to be rendered, and add it to the THREE Object3d group.
     this.parent_group.add(CreateSphere(this.texture,(this.size),50,this.name));
-    this.parent_group.add(CreateTransparentSphere(TRANSPARENT_SPHERE_SIZE,50,TRANSPARENT_SPHERE_NAME));
+  //  this.parent_group.add(CreateTransparentSphere(TRANSPARENT_SPHERE_SIZE,50,TRANSPARENT_SPHERE_NAME));
+    this.parent_group.add(CreateSpriteText(this.name,'#ffffff',this.name+"_text",this.size));
     
 
     // Scales down real values to simulation values and calculates periapsis and apoapsis from associated variables.
@@ -106,7 +107,7 @@ var Mercury_Info = {
     LONGITUDE_ASCENDING_NODE: 48.33,
     ARGUMENT_OF_PERIAPSIS: 77.45,
     MEAN_ANAMOLY_EPOCH: 252.25,
-    BODY_NAME: "Mercury",
+    BODY_NAME: 'Mercury',
     TEXTURE:'./textures/mercury.jpg'
     
 };

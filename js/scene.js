@@ -10,17 +10,21 @@
 
 
 
+
 //Define Geometry
-const ZOOM_SCALE_FACTOR = 0.01;
+var ZOOM_SCALE_FACTOR = 1200;
 
 const TRANSPARENT_SPHERE_SIZE = 5;
 const TRANSPARENT_SPHERE_NAME = "TransparentSphere";
-var TRANSPARENT_SPHERE_SCALE_FACTOR = 250;
+//var ZOOM_SCALE_FACTOR = 1200;
 
 var scene, camera, controls, renderer; // The basics
 var camera_position = new THREE.Vector3(0,0,0); // Define where the camera is pointing at.
 var lights = [];
 var scene_tree;
+
+var Text2D = THREE_Text.Text2D;
+var textAlign = THREE_Text.textAlign;
 
 
 var mercury_group, mercury_group_orbit,venus_group, venus_group_orbit,
@@ -126,10 +130,10 @@ function init(){
   HighlightPlanets.onChange(function(value){
     
     if(value == true){
-      TRANSPARENT_SPHERE_SCALE_FACTOR = 250;
+      ZOOM_SCALE_FACTOR = 1200;
     }
     else {
-      TRANSPARENT_SPHERE_SCALE_FACTOR = 2e5;
+      ZOOM_SCALE_FACTOR = 2e5;
     }
     
   });
@@ -236,9 +240,6 @@ Pluto = new Planet_Gen(Pluto_Info,pluto_group);
 
 
 
-
-
-
   // Using a skydome instead of a skybox 
   
   var SkyboxMesh = CreateSphere('./textures/milkyway.jpg',1e8,50,"Skybox",true);
@@ -321,8 +322,6 @@ function TraceOrbitOutlines(){
   orbit_outlines.add(CreateOrbitalLine(0xffc7ff,Pluto.semimajor_axis_scene(),Pluto.semiminor_axis_scene(),Pluto.periapsis_scene(),Pluto.orbital_inclination,Pluto.longitude_ascending,Pluto.argument_periapsis,Pluto.orbital_eccentricity));
   scene.add(orbit_outlines);
 
-console.log(Mars.longitude_ascending);
-
 }
 
 function CreateSphere(texture_u,radius,polygon_count,name,basic){
@@ -330,7 +329,6 @@ function CreateSphere(texture_u,radius,polygon_count,name,basic){
   var sphere_loader = new THREE.TextureLoader();
   var sphere_texture = sphere_loader.load(texture_u);
   var sphere_geometry=new THREE.SphereGeometry(radius,polygon_count,polygon_count);
-//  var sphere_material=new THREE.MeshPhongMaterial({map: sphere_texture});
   if (basic==true) {
     var sphere_material=new THREE.MeshBasicMaterial({map: sphere_texture});
   } else {
@@ -351,24 +349,10 @@ function CreateOrbitalLine(color,semimajor_axis,semiminor_axis,periapsis,orbital
   
   for (var i = 0; i < ((2*Math.PI)+0.02); (i = i + 0.01)) {
 
-    
-/*
-    var y=  (semimajor_axis*Math.sin(i)*Math.sin(orbital_inclination*(Math.PI/180)));
-    var x = (semimajor_axis*Math.cos(i)) - (semimajor_axis - periapsis);
-    var z = (semiminor_axis*Math.sin(i)*Math.cos(orbital_inclination*(Math.PI/180)));
-/*
-/*
-X = R * (Cos(N) * Cos(TA + w) - Sin(N) * Sin(TA+w)*Cos(i) 
-Z = R * (Sin(N) * Cos(TA+w) + Cos(N) * Sin(TA+w)) * Cos(i)) 
-y = R * Sin(TA+w) * Sin(i)
-*/
-
-var R = semimajor_axis * (1-Math.pow(eccentricity,2))/(1+(eccentricity*Math.cos(i+argument_periapsis)));
-var y = R*Math.sin(i+argument_periapsis)*Math.sin(orbital_inclination);
-var x = R*(Math.cos(longitude_ascending)*Math.cos(i+argument_periapsis) - Math.sin(longitude_ascending)*Math.sin(i+argument_periapsis))*Math.cos(orbital_inclination);
-var z = R*(Math.sin(longitude_ascending)*Math.cos(i+argument_periapsis)+Math.cos(longitude_ascending)*Math.sin(i+argument_periapsis))*Math.cos(orbital_inclination);
-
-
+    var R = semimajor_axis * (1-Math.pow(eccentricity,2))/(1+(eccentricity*Math.cos(i+argument_periapsis)));
+    var y = R*Math.sin(i+argument_periapsis)*Math.sin(orbital_inclination);
+    var x = R*(Math.cos(longitude_ascending)*Math.cos(i+argument_periapsis) - Math.sin(longitude_ascending)*Math.sin(i+argument_periapsis))*Math.cos(orbital_inclination);
+    var z = R*(Math.sin(longitude_ascending)*Math.cos(i+argument_periapsis)+Math.cos(longitude_ascending)*Math.sin(i+argument_periapsis))*Math.cos(orbital_inclination);
     linegeometry.vertices.push(new THREE.Vector3(x,y,z));
       
   }
@@ -389,6 +373,15 @@ function CreateTransparentSphere(radius,polygon_count,name){
   return(sphere_mesh);
 
 };
+
+function CreateSpriteText(text,colour,name,offset){
+
+  var SpriteText = new THREE_Text.SpriteText2D(text, { align: textAlign.center, font: '30px Arial', fillStyle: colour, antialias: true });
+  SpriteText.position.set(0,offset+10,0);
+  SpriteText.name = name;
+  return(SpriteText);
+
+}
 
 function CalculateDistanceFromObject(camera_x,camera_y,camera_z,object_x,object_y,object_z){
 
@@ -411,8 +404,7 @@ function ScaleOverlaySpheres(sphere_name,object_group,distance_from_group,scale_
   object_group.getObjectByName(sphere_name,true).scale.z = (distance_from_planet)/scale_constant;
 
 
-}
-
+};
 
 function ScalePlanet(planet,scale_constant){
 
@@ -422,7 +414,7 @@ function ScalePlanet(planet,scale_constant){
   planet.parent_group.getObjectByName(planet.name,true).scale.z = scale_constant;
 
 
-}
+};
 
 // Sets camera target point.
 //This needs a lot of work...
@@ -501,7 +493,7 @@ function UpdateCameraLocation(){
 
 }
 
-// Where the magic happens: Takes a planet_group in and planet physics object, and adjusts the position in the scene.
+// Where the magic happens: Takes a 3D planet_group in and planet physics object, and adjusts the position in the scene.
 // Uses eulers angles and astrodynamics to compute keplerian elements to cartesian co-ordinates. Google was very helpful with getting head round some of the maths.
 function AdjustPlanetLocation(group,planet){
   
@@ -513,7 +505,6 @@ function AdjustPlanetLocation(group,planet){
 
 
 };
-
 
 function onWindowResize() {
 
@@ -609,16 +600,18 @@ function update(){
   */
   // Also can be optimised. Same as above.
   
-  ScaleOverlaySpheres(TRANSPARENT_SPHERE_NAME,mercury_group,sun_group,TRANSPARENT_SPHERE_SCALE_FACTOR);
-  ScaleOverlaySpheres(TRANSPARENT_SPHERE_NAME,venus_group,sun_group,TRANSPARENT_SPHERE_SCALE_FACTOR);
-  ScaleOverlaySpheres(TRANSPARENT_SPHERE_NAME,earth_group,sun_group,TRANSPARENT_SPHERE_SCALE_FACTOR);
-  ScaleOverlaySpheres(TRANSPARENT_SPHERE_NAME,mars_group,sun_group,TRANSPARENT_SPHERE_SCALE_FACTOR);
-  ScaleOverlaySpheres(TRANSPARENT_SPHERE_NAME,jupiter_group,sun_group,TRANSPARENT_SPHERE_SCALE_FACTOR);
-  ScaleOverlaySpheres(TRANSPARENT_SPHERE_NAME,saturn_group,sun_group,TRANSPARENT_SPHERE_SCALE_FACTOR);
-  ScaleOverlaySpheres(TRANSPARENT_SPHERE_NAME,uranus_group,sun_group,TRANSPARENT_SPHERE_SCALE_FACTOR);
-  ScaleOverlaySpheres(TRANSPARENT_SPHERE_NAME,neptune_group,sun_group,TRANSPARENT_SPHERE_SCALE_FACTOR);
-  ScaleOverlaySpheres(TRANSPARENT_SPHERE_NAME,pluto_group,sun_group,TRANSPARENT_SPHERE_SCALE_FACTOR);
+  ScaleOverlaySpheres('Mercury_text',mercury_group,mercury_group,ZOOM_SCALE_FACTOR);
+  ScaleOverlaySpheres('Venus_text',venus_group,venus_group,ZOOM_SCALE_FACTOR);
+  ScaleOverlaySpheres('Earth_text',earth_group,earth_group,ZOOM_SCALE_FACTOR);
+  ScaleOverlaySpheres('Moon_text',earth_moon_group,earth_group,ZOOM_SCALE_FACTOR);
+  ScaleOverlaySpheres('Mars_text',mars_group,mars_group,ZOOM_SCALE_FACTOR);
+  ScaleOverlaySpheres('Jupiter_text',jupiter_group,jupiter_group,ZOOM_SCALE_FACTOR);
+  ScaleOverlaySpheres('Saturn_text',saturn_group,saturn_group,ZOOM_SCALE_FACTOR);
+  ScaleOverlaySpheres('Uranus_text',uranus_group,uranus_group,ZOOM_SCALE_FACTOR);
+  ScaleOverlaySpheres('Neptune_text',neptune_group,neptune_group,ZOOM_SCALE_FACTOR);
+  ScaleOverlaySpheres('Pluto_text',pluto_group,pluto_group,ZOOM_SCALE_FACTOR);
   
+
   // Give sun a bit of rotation per frame.
   sun_mesh.rotation.y += 0.0005;
   
