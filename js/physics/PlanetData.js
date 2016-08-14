@@ -5,6 +5,7 @@ const GRAV_CONSTANT = 6.674E-11;
 const SECONDS_IN_YEAR = 3.15576e7;
 const SUN_SIZE = 695;
 const SUN_MASS = 1.989e30; // Kilograms
+//const SUN_MASS = 5.97e24;
 //var SCALING_TIME = 10.0;
 const PLANET_SCALE = 10000;
 
@@ -42,11 +43,19 @@ function Planet_Gen(planet_obj,render_group){
     
     //This is for ES5 compatability in safari. Would prefer to use default parameters as ES6 defines it but Chrome/Firefox have basic support currently.
     if(planet_obj.MEAN_ANAMOLY_EPOCH === undefined){
-        mean_anamoly_epoch = 0.0;
+        planet_obj.mean_anamoly_epoch = 0.0;
     }
+
+    if(planet_obj.CENTRAL_MASS === undefined){
+        planet_obj.CENTRAL_MASS = SUN_MASS;
+    }
+    
+
+   
 
     this.size = planet_obj.SIZE;
     this.mass = planet_obj.MASS;
+    this.central_mass=planet_obj.CENTRAL_MASS;
     this.semimajor_axis = planet_obj.SEMIMAJOR_AXIS;
     this.semiminor_axis = planet_obj.SEMIMINOR_AXIS;
     this.orbital_eccentricity = planet_obj.ECCENTRICITY;
@@ -74,7 +83,7 @@ function Planet_Gen(planet_obj,render_group){
     this.apoapsis_scene = function(){return(this.apoapsis()/PLANET_SCALE)};
 
     // This calls out to the main physics module and calculates the movement in the scene.
-    this.eccentric_anamoly = function(){return( KeplerSolve(this.orbital_eccentricity,CalculateMT(CalculateN(this.semimajor_axis))))};
+    this.eccentric_anamoly = function(){return( KeplerSolve(this.orbital_eccentricity,CalculateMT(CalculateN(this.semimajor_axis,this.central_mass))))};
     this.true_anamoly = function(){return(CalculateTrueAnamoly(this.eccentric_anamoly(),this.orbital_eccentricity,true)+this.mean_anamoly_epoch)};
 };
 
@@ -157,6 +166,7 @@ var Moon_Info= {
     LONGITUDE_ASCENDING_NODE: 0,
     ARGUMENT_OF_PERIAPSIS: 0,
     MEAN_ANAMOLY_EPOCH: 0,
+    CENTRAL_MASS: 5.972e24,
     BODY_NAME: "Moon",
     TEXTURE: './textures/moon_map.jpg'
 

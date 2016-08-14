@@ -4,9 +4,8 @@
 
 // Work on sun effects a bit more.
 // Add more stuff: Rings, asteroids? Perhaps a few famous comets?
-// Calculate orbits by Keplers Law.Partially done! Things to do:
-// Longitude of the Ascending Node.
-// Argument of Periapsis
+// Loading manager.
+
 
 
 
@@ -23,8 +22,8 @@ var camera_position = new THREE.Vector3(0,0,0); // Define where the camera is po
 var lights = [];
 var scene_tree;
 
-var Text2D = THREE_Text.Text2D;
-var textAlign = THREE_Text.textAlign;
+
+
 
 
 var mercury_group, mercury_group_orbit,venus_group, venus_group_orbit,
@@ -50,6 +49,8 @@ var options = new function(){
   this.OrbitScale = 0.02;
   this.CameraFocus = 'Sun';
   this.Render_Updated_Scaling = function(){UpdateScene();};
+  this.sun_effect_speed = 0.01;
+  this.sun_effect_noise = 0.5337;
   this.SceneToConsole = function(){
     console.log("X Position: " + camera.position.x);
     console.log("Y Position: " + camera.position.y);
@@ -80,6 +81,7 @@ animate();
 function init(){
 
  
+ 
 
 
   stats_fps.showPanel(0);
@@ -109,18 +111,25 @@ function init(){
   var Camera_Focus = datGUI.add(options,'CameraFocus',['Sun','Mercury','Venus','Earth','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto']);
   
   var OrbitalFolder = datGUI.addFolder("Orbital Parameters");
-  OrbitalFolder.add(options,'OrbitSpeedMultiplier',0.0,50.0);
+  OrbitalFolder.add(options,'OrbitSpeedMultiplier',0.0,20000000.0);
   var ShowOutlines = OrbitalFolder.add(options,'ShowOrbitOutline');
   
 
   var PlanetFolder = datGUI.addFolder("Planet Parameters");
   PlanetFolder.add(options,'PlanetScale',1,30);
   var HighlightPlanets = PlanetFolder.add(options,'HighlightPlanets');
+
+  var EffectsFolder = datGUI.addFolder("3D Sandbox");
+  var SunEffectsFolder = EffectsFolder.addFolder("Sun");
+  SunEffectsFolder.add(options,'sun_effect_noise',0.00,1.00);
+  SunEffectsFolder.add(options,'sun_effect_speed',0.00,1.00)
   
   var DebugFolder = datGUI.addFolder("Debug");
   DebugFolder.add(options,'SceneToConsole');
   DebugFolder.add(options,'MercuryToConsole');
   DebugFolder.add(options,'MercurySize');
+
+  
   
   ShowOutlines.onChange(function(value) {
     orbit_outlines.visible = value;
@@ -232,7 +241,6 @@ Saturn = new Planet_Gen(Saturn_Info,saturn_group);
 Uranus = new Planet_Gen(Uranus_Info,uranus_group)
 Neptune = new Planet_Gen(Neptune_Info,neptune_group);
 Pluto = new Planet_Gen(Pluto_Info,pluto_group);
-
 
 
 
@@ -376,7 +384,7 @@ function CreateTransparentSphere(radius,polygon_count,name){
 
 function CreateSpriteText(text,colour,name,offset){
 
-  var SpriteText = new THREE_Text.SpriteText2D(text, { align: textAlign.center, font: '30px Arial', fillStyle: colour, antialias: true });
+  var SpriteText = new THREE_Text.SpriteText2D(text, { align: THREE_Text.textAlign.center, font: '30px Arial', fillStyle: colour, antialias: true });
   SpriteText.position.set(0,offset+10,0);
   SpriteText.name = name;
   return(SpriteText);
