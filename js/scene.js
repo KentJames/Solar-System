@@ -4,9 +4,8 @@
 
 // Work on sun effects a bit more.
 // Add more stuff: Rings, asteroids? Perhaps a few famous comets?
-// Calculate orbits by Keplers Law.Partially done! Things to do:
-// Longitude of the Ascending Node.
-// Argument of Periapsis
+// Loading manager.
+
 
 
 
@@ -50,6 +49,8 @@ var options = new function(){
   this.OrbitScale = 0.02;
   this.CameraFocus = 'Sun';
   this.Render_Updated_Scaling = function(){UpdateScene();};
+  this.sun_effect_speed = 0.01;
+  this.sun_effect_noise = 0.5337;
   this.SceneToConsole = function(){
     console.log("X Position: " + camera.position.x);
     console.log("Y Position: " + camera.position.y);
@@ -117,11 +118,18 @@ function init(){
   var PlanetFolder = datGUI.addFolder("Planet Parameters");
   PlanetFolder.add(options,'PlanetScale',1,30);
   var HighlightPlanets = PlanetFolder.add(options,'HighlightPlanets');
+
+  var EffectsFolder = datGUI.addFolder("3D Sandbox");
+  var SunEffectsFolder = EffectsFolder.addFolder("Sun");
+  SunEffectsFolder.add(options,'sun_effect_noise',0.00,1.00);
+  SunEffectsFolder.add(options,'sun_effect_speed',0.00,1.00)
   
   var DebugFolder = datGUI.addFolder("Debug");
   DebugFolder.add(options,'SceneToConsole');
   DebugFolder.add(options,'MercuryToConsole');
   DebugFolder.add(options,'MercurySize');
+
+  
   
   ShowOutlines.onChange(function(value) {
     orbit_outlines.visible = value;
