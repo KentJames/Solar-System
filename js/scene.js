@@ -18,7 +18,7 @@ const TRANSPARENT_SPHERE_SIZE = 5;
 const TRANSPARENT_SPHERE_NAME = "TransparentSphere";
 //var ZOOM_SCALE_FACTOR = 1200;
 
-var scene, scene_2, camera, controls, renderer; // The basics
+var scene, scene_2, camera, camera_pivot,controls, renderer; // The basics
 var camera_position = new THREE.Vector3(0,0,0); // Define where the camera is pointing at.
 var lights = [];
 var scene_tree;
@@ -88,7 +88,7 @@ function init(){
   stats_fps.showPanel(0);
 
   //Setup Renderer!
-  renderer = new THREE.WebGLRenderer({antialias: false, logarithmicDepthBuffer: false,alpha:true}); // Logarithmic depth buffer set to true causes severe shader artifacts.
+  renderer = new THREE.WebGLRenderer({antialias: true, logarithmicDepthBuffer: false,alpha:true}); // Logarithmic depth buffer set to true causes severe shader artifacts.
   renderer.setSize(window.innerWidth, window.innerHeight);
 //  renderer.autoClear = false;
   
@@ -114,12 +114,9 @@ function init(){
   
   var OrbitalFolder = datGUI.addFolder("Orbital Parameters");
   OrbitalFolder.add(options,'OrbitSpeedMultiplier',0.0,20000000.0);
+  OrbitalFolder.add(options,'PlanetScale',1,30);
   var ShowOutlines = OrbitalFolder.add(options,'ShowOrbitOutline');
-  
-
-  var PlanetFolder = datGUI.addFolder("Planet Parameters");
-  PlanetFolder.add(options,'PlanetScale',1,30);
-  var HighlightPlanets = PlanetFolder.add(options,'HighlightPlanets');
+  var HighlightPlanets = OrbitalFolder.add(options,'HighlightPlanets');
 
   var EffectsFolder = datGUI.addFolder("3D Sandbox");
   var SunEffectsFolder = EffectsFolder.addFolder("Sun");
@@ -196,6 +193,7 @@ function init(){
   skybox_group = new THREE.Object3D();
   sun_group = new THREE.Object3D();
   orbit_outlines = new THREE.Object3D();
+
 
   mercury_group_orbit = new THREE.Object3D();
   mercury_group = new THREE.Object3D();
@@ -561,8 +559,8 @@ function animate() {
   // Sun glow effect is calculated from view matrix so ensure as view matrix changes effect updates.
   sunGlow.material.uniforms.viewVector.value = 
 	  new THREE.Vector3().subVectors( camera.position, sunGlow.position );
-  this.sun_mesh.material.uniforms.baseSpeed.value = options.sun_effect_speed;
-  this.sun_mesh.material.uniforms.noiseScale.value = options.sun_effect_noise;
+  sun_mesh.material.uniforms.baseSpeed.value = options.sun_effect_speed;
+  sun_mesh.material.uniforms.noiseScale.value = options.sun_effect_noise;
   sun_mesh.material.uniforms.time.value += Clock.getDelta();
   stats_fps.update();
   update();
