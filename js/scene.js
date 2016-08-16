@@ -23,7 +23,7 @@ var camera_position = new THREE.Vector3(0,0,0); // Define where the camera is po
 var lights = [];
 var scene_tree;
 
-
+var antialias = false;
 
 
 
@@ -46,6 +46,8 @@ var options = new function(){
   this.OrbitSpeedMultiplier= 1.0;
   this.ShowOrbitOutline = true;
   this.HighlightPlanets = true;
+  this.AntiAliasing = false;
+  this.Alpha = false;
   this.PlanetScale = 1;
   this.OrbitScale = 0.02;
   this.CameraFocus = 'Sun';
@@ -88,7 +90,7 @@ function init(){
   stats_fps.showPanel(0);
 
   //Setup Renderer!
-  renderer = new THREE.WebGLRenderer({antialias: true, logarithmicDepthBuffer: false,alpha:true}); // Logarithmic depth buffer set to true causes severe shader artifacts.
+  renderer = new THREE.WebGLRenderer({antialias: antialias, logarithmicDepthBuffer: false,alpha:true}); // Logarithmic depth buffer set to true causes severe shader artifacts.
   renderer.setSize(window.innerWidth, window.innerHeight);
 //  renderer.autoClear = false;
   
@@ -118,10 +120,13 @@ function init(){
   var ShowOutlines = OrbitalFolder.add(options,'ShowOrbitOutline');
   var HighlightPlanets = OrbitalFolder.add(options,'HighlightPlanets');
 
-  var EffectsFolder = datGUI.addFolder("3D Sandbox");
+  var EffectsFolder = datGUI.addFolder("3D Options");
   var SunEffectsFolder = EffectsFolder.addFolder("Sun Shader");
   SunEffectsFolder.add(options,'sun_effect_noise',0.00,1.00);
   SunEffectsFolder.add(options,'sun_effect_speed',0.00,1.00)
+  var RenderOptionsFolder = EffectsFolder.addFolder("Renderer Options");
+  var AntiAliasing = RenderOptionsFolder.add(options,'AntiAliasing');
+  RenderOptionsFolder.add(options,'Alpha');
   
   var DebugFolder = datGUI.addFolder("Debug");
   DebugFolder.add(options,'SceneToConsole');
@@ -145,6 +150,15 @@ function init(){
     }
     
   });
+
+
+  // TO change the WebGL renderer context requires recreating the renderer with new context, need to re-architect for that.
+  /*AntiAliasing.onChange(function(value){
+    renderer.clear();
+    antialias = value;
+    init();
+
+  });*/ // THis never worked.
   
   
  //datGUI.close();
