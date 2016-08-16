@@ -119,7 +119,7 @@ function init(){
   var HighlightPlanets = OrbitalFolder.add(options,'HighlightPlanets');
 
   var EffectsFolder = datGUI.addFolder("3D Sandbox");
-  var SunEffectsFolder = EffectsFolder.addFolder("Sun");
+  var SunEffectsFolder = EffectsFolder.addFolder("Sun Shader");
   SunEffectsFolder.add(options,'sun_effect_noise',0.00,1.00);
   SunEffectsFolder.add(options,'sun_effect_speed',0.00,1.00)
   
