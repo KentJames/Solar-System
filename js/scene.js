@@ -2,6 +2,7 @@
 
 //Things to do:
 
+// Rotation? Physically accurate would be ludicrously fast so perhaps slow it down for show purposes.
 // Work on sun effects a bit more.
 // Add more stuff: Rings, asteroids? Perhaps a few famous comets?
 // Loading manager.
@@ -17,7 +18,7 @@ const TRANSPARENT_SPHERE_SIZE = 5;
 const TRANSPARENT_SPHERE_NAME = "TransparentSphere";
 //var ZOOM_SCALE_FACTOR = 1200;
 
-var scene, camera, controls, renderer; // The basics
+var scene, scene_2, camera, camera_pivot,controls, renderer; // The basics
 var camera_position = new THREE.Vector3(0,0,0); // Define where the camera is pointing at.
 var lights = [];
 var scene_tree;
@@ -87,8 +88,9 @@ function init(){
   stats_fps.showPanel(0);
 
   //Setup Renderer!
-  renderer = new THREE.WebGLRenderer({antialias: false, logarithmicDepthBuffer: false}); // Logarithmic depth buffer set to true causes severe shader artifacts.
+  renderer = new THREE.WebGLRenderer({antialias: true, logarithmicDepthBuffer: false,alpha:true}); // Logarithmic depth buffer set to true causes severe shader artifacts.
   renderer.setSize(window.innerWidth, window.innerHeight);
+//  renderer.autoClear = false;
   
   //Setup camera and mouse controls.
   camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight,10,3e8);
@@ -112,12 +114,9 @@ function init(){
   
   var OrbitalFolder = datGUI.addFolder("Orbital Parameters");
   OrbitalFolder.add(options,'OrbitSpeedMultiplier',0.0,20000000.0);
+  OrbitalFolder.add(options,'PlanetScale',1,30);
   var ShowOutlines = OrbitalFolder.add(options,'ShowOrbitOutline');
-  
-
-  var PlanetFolder = datGUI.addFolder("Planet Parameters");
-  PlanetFolder.add(options,'PlanetScale',1,30);
-  var HighlightPlanets = PlanetFolder.add(options,'HighlightPlanets');
+  var HighlightPlanets = OrbitalFolder.add(options,'HighlightPlanets');
 
   var EffectsFolder = datGUI.addFolder("3D Sandbox");
   var SunEffectsFolder = EffectsFolder.addFolder("Sun");
@@ -159,19 +158,42 @@ function init(){
 
   //Setup lights...
   scene = new THREE.Scene();
+  scene_2 = new THREE.Scene(); // Two scenes ensure lens flare renders properly.
   lights[ 0 ] = new THREE.AmbientLight(0xffffff,0.1);
   lights[ 1 ] = new THREE.PointLight( 0xffffff,2,1000000,2);
   lights[ 1 ].position.set = (0,0,0); // Center of the sun.
   scene.add(lights[ 0 ]);
   scene.add(lights[ 1 ]);
 
+  
+
+  //Setup lens flare.
+  var lensloader = new THREE.TextureLoader;
+  var lensflare0 = new lensloader.load('./textures/lens_flare/lensflare0.png');
+  var lensflare2 = new lensloader.load('./textures/lens_flare/lensflare2.png');
+  var lensflare3 = new lensloader.load('./textures/lens_flare/lensflare3.png');
+
+  this.sun_flare = new THREE.LensFlare(lensflare0,200,0.0,THREE.AdditiveBlending,new THREE.Color(0xffffff))
 
 
+  this.sun_flare.add( lensflare2, 512, 0.0, THREE.AdditiveBlending );
+	this.sun_flare.add( lensflare2, 512, 0.0, THREE.AdditiveBlending );
+	this.sun_flare.add( lensflare2, 512, 0.0, THREE.AdditiveBlending );
+
+	this.sun_flare.add( lensflare3, 60, 0.6, THREE.AdditiveBlending );
+	this.sun_flare.add( lensflare3, 70, 0.7, THREE.AdditiveBlending );
+	this.sun_flare.add( lensflare3, 120, 0.9, THREE.AdditiveBlending );
+	this.sun_flare.add( lensflare3, 70, 1.0, THREE.AdditiveBlending );
+  this.sun_flare.position.set(0,0,0);
+
+  scene.add(sun_flare);
+  
 
   //Setup planet objects...
   skybox_group = new THREE.Object3D();
   sun_group = new THREE.Object3D();
   orbit_outlines = new THREE.Object3D();
+
 
   mercury_group_orbit = new THREE.Object3D();
   mercury_group = new THREE.Object3D();
@@ -230,17 +252,17 @@ function init(){
 
 
 
-// Generate Planets. Objects handle physics as well as adding 3d object to scene.
-Mercury = new Planet_Gen(Mercury_Info,mercury_group);
-Venus = new Planet_Gen(Venus_Info,venus_group);
-Earth = new Planet_Gen(Earth_Info,earth_group);
-Mars = new Planet_Gen(Mars_Info,mars_group);
-Moon = new Planet_Gen(Moon_Info,earth_moon_group);
-Jupiter = new Planet_Gen(Jupiter_Info,jupiter_group);
-Saturn = new Planet_Gen(Saturn_Info,saturn_group);
-Uranus = new Planet_Gen(Uranus_Info,uranus_group)
-Neptune = new Planet_Gen(Neptune_Info,neptune_group);
-Pluto = new Planet_Gen(Pluto_Info,pluto_group);
+  // Generate Planets. Objects handle physics as well as adding 3d object to scene.
+  Mercury = new Planet_Gen(Mercury_Info,mercury_group);
+  Venus = new Planet_Gen(Venus_Info,venus_group);
+  Earth = new Planet_Gen(Earth_Info,earth_group);
+  Mars = new Planet_Gen(Mars_Info,mars_group);
+  Moon = new Planet_Gen(Moon_Info,earth_moon_group);
+  Jupiter = new Planet_Gen(Jupiter_Info,jupiter_group);
+  Saturn = new Planet_Gen(Saturn_Info,saturn_group);
+  Uranus = new Planet_Gen(Uranus_Info,uranus_group)
+  Neptune = new Planet_Gen(Neptune_Info,neptune_group);
+  Pluto = new Planet_Gen(Pluto_Info,pluto_group);
 
 
 
@@ -248,22 +270,21 @@ Pluto = new Planet_Gen(Pluto_Info,pluto_group);
 
 
 
-  // Using a skydome instead of a skybox 
+  // Create skydome. 
   
   var SkyboxMesh = CreateSphere('./textures/milkyway.jpg',1e8,50,"Skybox",true);
   SkyboxMesh.material.side= THREE.BackSide;
   skybox_group.add(SkyboxMesh);
   
 
-  // Add some geometry
-  //sun_group.add(CreateSphere('./textures/sun_atmos.jpg',SUN_SIZE,50,"Sun",true));
+  // Add the sun.
   var sun_text_loader = new THREE.TextureLoader();
   var sun_texture = sun_text_loader.load('./textures/sun_atmos.jpg');
   sun_texture.wrapS = sun_texture.wrapT = THREE.RepeatWrapping;
   var sun_noise_text = sun_text_loader.load('./textures/sun_cloud_map.jpg');
   sun_noise_text.wrapS = sun_noise_text.wrapT = THREE.RepeatWrapping;
   
-  
+  // Define sun surface effect through shader.
   var customAniMaterial = new THREE.ShaderMaterial( 
 	{
 	    uniforms: {
@@ -280,12 +301,13 @@ Pluto = new Planet_Gen(Pluto_Info,pluto_group);
   
   
   var sun_geometry=new THREE.SphereGeometry(SUN_SIZE,50,50);
- // var sphere_material=new THREE.MeshBasicMaterial({map: sphere_texture});  
-  this.sun_mesh = new THREE.Mesh(sun_geometry,customAniMaterial);
-  
+  this.sun_mesh = new THREE.Mesh(sun_geometry,customAniMaterial); 
+  this.sun_mesh.name = "sun";
+  this.sun_mesh.depthWrite = false;
   sun_group.add(sun_mesh);
     
-    var customMaterialGlow = new THREE.ShaderMaterial( 
+  // Define glowing/halo shader effect for sun.
+  var customMaterialGlow = new THREE.ShaderMaterial( 
 	{
 	    uniforms: 
 		{ 
@@ -501,6 +523,8 @@ function UpdateCameraLocation(){
 
 }
 
+
+
 // Where the magic happens: Takes a 3D planet_group in and planet physics object, and adjusts the position in the scene.
 // Uses eulers angles and astrodynamics to compute keplerian elements to cartesian co-ordinates. Google was very helpful with getting head round some of the maths.
 function AdjustPlanetLocation(group,planet){
@@ -535,6 +559,8 @@ function animate() {
   // Sun glow effect is calculated from view matrix so ensure as view matrix changes effect updates.
   sunGlow.material.uniforms.viewVector.value = 
 	  new THREE.Vector3().subVectors( camera.position, sunGlow.position );
+  sun_mesh.material.uniforms.baseSpeed.value = options.sun_effect_speed;
+  sun_mesh.material.uniforms.noiseScale.value = options.sun_effect_noise;
   sun_mesh.material.uniforms.time.value += Clock.getDelta();
   stats_fps.update();
   update();
@@ -545,8 +571,11 @@ function animate() {
 
 function render() {
 
+//  renderer.clear();
+  renderer.render( scene, camera );
+//  renderer.clearDepth();
+//  renderer.render( scene_2, camera );
 
-  renderer.render(scene,camera);
   
   //mercury_group_orbit.rotation.y += planet_rotation;
   //venus_group_orbit.rotation.y += planet_rotation/1.5;
@@ -584,6 +613,16 @@ function update(){
   AdjustPlanetLocation(neptune_group,Neptune);
   AdjustPlanetLocation(pluto_group,Pluto);  
  // console.log(mercury_group.position.z)
+ if(CalculateDistanceFromObject(camera.position.x,camera.position.y,camera.position.z,0,0,0)>25000){
+   this.sun_mesh.visible = false;
+   this.sunGlow.visible = false;
+ }
+ else{
+   this.sun_mesh.visible = true;
+   this.sunGlow.visible = true;
+ }
+ 
+    
   
   //Scale Planets. This can definitely be optimised but not an issue atm. Optimise once per scaling update instead of once per frame.
  

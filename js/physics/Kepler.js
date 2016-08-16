@@ -1,7 +1,6 @@
 // Defines functions to solve
 //
-//  Keplers first equation.
-//  Keplers second equation.
+//  Keplers first, second, and third laws. 
 //
 // Credit for a lot of these go to Marc. A. Murison of US Naval Observatory, Washington, DC
 // Link: http://murison.alpheratz.net/dynamics/twobody/KeplerIterations_summary.pdf
@@ -10,7 +9,7 @@
 var SCALING_TIME = 0.1; // Set by GUI
 const SET_SCALING_TIME = 1; //Equalizer as physics has a tendency to run a bit fast.
 
-//Calculate orbital period.
+//Calculate orbital period. Because of lack of similar-mass two-body problems, we only take the largest mass in.
 function CalculateN(semimajor_axis,central_mass){
 
 
@@ -49,15 +48,6 @@ function eps3(e,M,x){
   return(t5/((1/2*t3 - 1/6*t1*t6)*e*t6+t2));
   
 };
-
-/*function CalculateTrueAnamoly(Eccentric_Anamoly,Eccentricity){
-  
-  var e1,e2;
-  e1 = (Math.cos(Eccentric_Anamoly)-Eccentricity);
-  e2 = (1-(Eccentricity*Math.cos(Eccentric_Anamoly)));
-  return(Math.acos(e1/e2));
-  
-}; */
 
 function CalculateTrueAnamoly(Eccentric_Anamoly,Eccentricity,Retrograde){
   
