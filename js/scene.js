@@ -3,7 +3,7 @@
 //Things to do:
 
 // Rotation? Physically accurate would be ludicrously fast so perhaps slow it down for show purposes.
-// Work on sun effects a bit more.
+// Add showier 3D effects.
 // Add more stuff: Rings, asteroids? Perhaps a few famous comets?
 // Loading manager.
 
@@ -51,7 +51,7 @@ var options = new function(){
   this.PlanetScale = 1;
   this.OrbitScale = 0.02;
   this.CameraFocus = 'Sun';
-  this.CameraStyle = 'Orbit';
+//  this.CameraStyle = 'Orbit';
   this.Render_Updated_Scaling = function(){UpdateScene();};
   this.sun_effect_speed = 0.01;
   this.sun_effect_noise = 0.5337;
@@ -114,7 +114,7 @@ function init(){
   datGUI = new dat.GUI();
   
   var Camera_Focus = datGUI.add(options,'CameraFocus',['Sun','Mercury','Venus','Earth','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto']);
-  var Camera_style = datGUI.add(options, 'CameraStyle', ['Orbit','Free']);
+//  var Camera_style = datGUI.add(options, 'CameraStyle', ['Orbit','Free']);
   
   var OrbitalFolder = datGUI.addFolder("Orbital Parameters");
   OrbitalFolder.add(options,'OrbitSpeedMultiplier',0.0,20000000.0);
