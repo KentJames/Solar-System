@@ -3,7 +3,7 @@
 //Things to do:
 
 // Rotation? Physically accurate would be ludicrously fast so perhaps slow it down for show purposes.
-// Work on sun effects a bit more.
+// Add showier 3D effects.
 // Add more stuff: Rings, asteroids? Perhaps a few famous comets?
 // Loading manager.
 
@@ -18,7 +18,7 @@ const TRANSPARENT_SPHERE_SIZE = 5;
 const TRANSPARENT_SPHERE_NAME = "TransparentSphere";
 //var ZOOM_SCALE_FACTOR = 1200;
 
-var scene, scene_2, camera, camera_pivot,controls, renderer; // The basics
+var scene, camera, controls, renderer; // The basics
 var camera_position = new THREE.Vector3(0,0,0); // Define where the camera is pointing at.
 var lights = [];
 var scene_tree;
@@ -46,9 +46,12 @@ var options = new function(){
   this.OrbitSpeedMultiplier= 1.0;
   this.ShowOrbitOutline = true;
   this.HighlightPlanets = true;
+  this.AntiAliasing = false;
+  this.Alpha = false;
   this.PlanetScale = 1;
   this.OrbitScale = 0.02;
   this.CameraFocus = 'Sun';
+//  this.CameraStyle = 'Orbit';
   this.Render_Updated_Scaling = function(){UpdateScene();};
   this.sun_effect_speed = 0.01;
   this.sun_effect_noise = 0.5337;
@@ -88,14 +91,14 @@ function init(){
   stats_fps.showPanel(0);
 
   //Setup Renderer!
-  renderer = new THREE.WebGLRenderer({antialias: true, logarithmicDepthBuffer: false,alpha:true}); // Logarithmic depth buffer set to true causes severe shader artifacts.
+  renderer = new THREE.WebGLRenderer({antialias: false, logarithmicDepthBuffer: false,alpha:true}); // Logarithmic depth buffer set to true causes severe shader artifacts.
   renderer.setSize(window.innerWidth, window.innerHeight);
 //  renderer.autoClear = false;
   
   //Setup camera and mouse controls.
   camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight,10,3e8);
   //camera.position.x=3000;
-  controls = new THREE.OrbitControls( camera );
+  controls = new THREE.OrbitControls( camera ,renderer.domElement);
   controls.rotateSpeed = 1.0;
   controls.zoomSpeed = 0.5;
   controls.panSpeed = 0.8;
@@ -111,6 +114,7 @@ function init(){
   datGUI = new dat.GUI();
   
   var Camera_Focus = datGUI.add(options,'CameraFocus',['Sun','Mercury','Venus','Earth','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto']);
+//  var Camera_style = datGUI.add(options, 'CameraStyle', ['Orbit','Free']);
   
   var OrbitalFolder = datGUI.addFolder("Orbital Parameters");
   OrbitalFolder.add(options,'OrbitSpeedMultiplier',0.0,20000000.0);
@@ -118,10 +122,13 @@ function init(){
   var ShowOutlines = OrbitalFolder.add(options,'ShowOrbitOutline');
   var HighlightPlanets = OrbitalFolder.add(options,'HighlightPlanets');
 
-  var EffectsFolder = datGUI.addFolder("3D Sandbox");
-  var SunEffectsFolder = EffectsFolder.addFolder("Sun");
+  var EffectsFolder = datGUI.addFolder("3D Options");
+  var SunEffectsFolder = EffectsFolder.addFolder("Sun Shader");
   SunEffectsFolder.add(options,'sun_effect_noise',0.00,1.00);
   SunEffectsFolder.add(options,'sun_effect_speed',0.00,1.00)
+  var RenderOptionsFolder = EffectsFolder.addFolder("Renderer Options");
+  var AntiAliasing = RenderOptionsFolder.add(options,'AntiAliasing');
+  RenderOptionsFolder.add(options,'Alpha');
   
   var DebugFolder = datGUI.addFolder("Debug");
   DebugFolder.add(options,'SceneToConsole');
@@ -145,6 +152,15 @@ function init(){
     }
     
   });
+
+
+  // TO change the WebGL renderer context requires recreating the renderer with new context, need to re-architect for that.
+  /*AntiAliasing.onChange(function(value){
+    renderer.clear();
+    antialias = value;
+    init();
+
+  });*/ // THis never worked.
   
   
  //datGUI.close();
@@ -158,7 +174,6 @@ function init(){
 
   //Setup lights...
   scene = new THREE.Scene();
-  scene_2 = new THREE.Scene(); // Two scenes ensure lens flare renders properly.
   lights[ 0 ] = new THREE.AmbientLight(0xffffff,0.1);
   lights[ 1 ] = new THREE.PointLight( 0xffffff,2,1000000,2);
   lights[ 1 ].position.set = (0,0,0); // Center of the sun.
