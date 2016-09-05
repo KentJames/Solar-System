@@ -25,8 +25,10 @@ var scene_tree;
 
 var manager = new THREE.LoadingManager();
 
+document.getElementById("loadbar").innerHTML="<b> Loading: </b> 0%";
+
 manager.onProgress = function(item,loaded,total){
-  document.getElementById("loadbar").innerHTML="<b> Loading: </b>" + (loaded/total*100);
+  document.getElementById("loadbar").innerHTML="<b> Loading: </b>" + (loaded/total*100).toFixed(2)+"%";
 };
 
 manager.onLoad= function(){
@@ -94,7 +96,7 @@ animate();
 function init(){
 
  
- 
+  
 
 
   stats_fps.showPanel(0);

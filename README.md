@@ -1,4 +1,4 @@
-This is a physically accurate 3D model of the solar system. Orbits are plotted by Keplers laws and the model is run through Three.js, a library for WebGL.
+This is a physically accurate but very simple 3D model of the solar system. Orbits are calculated by Keplers laws and the model is run through Three.js, a library for WebGL.
 
 Should require no work to run apart from typing this url into your browser: https://kentjames.github.io/Solar-System/ 
 
