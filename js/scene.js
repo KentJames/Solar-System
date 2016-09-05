@@ -86,7 +86,7 @@ function init(){
 
  
  
-
+  document.getElementById("loadbar").innerHTML = "<b> Loading: </b> 0";
 
   stats_fps.showPanel(0);
 
@@ -203,6 +203,7 @@ function init(){
 
   scene.add(sun_flare);
   
+  document.getElementById("loadbar").innerHTML = "<b> Loading: </b> 20";
 
   //Setup planet objects...
   skybox_group = new THREE.Object3D();
@@ -265,20 +266,25 @@ function init(){
   scene.add(sun_group);
 
 
-
+  document.getElementById("loadbar").innerHTML = "<b> Loading: </b> 25";
 
   // Generate Planets. Objects handle physics as well as adding 3d object to scene.
   Mercury = new Planet_Gen(Mercury_Info,mercury_group);
+  document.getElementById("loadbar").innerHTML = "<b> Loading: </b> 30";
   Venus = new Planet_Gen(Venus_Info,venus_group);
+  document.getElementById("loadbar").innerHTML = "<b> Loading: </b> 35";
   Earth = new Planet_Gen(Earth_Info,earth_group);
+  document.getElementById("loadbar").innerHTML = "<b> Loading: </b> 40";
   Mars = new Planet_Gen(Mars_Info,mars_group);
+  document.getElementById("loadbar").innerHTML = "<b> Loading: </b> 45";
   Moon = new Planet_Gen(Moon_Info,earth_moon_group);
   Jupiter = new Planet_Gen(Jupiter_Info,jupiter_group);
+ 
   Saturn = new Planet_Gen(Saturn_Info,saturn_group);
   Uranus = new Planet_Gen(Uranus_Info,uranus_group)
   Neptune = new Planet_Gen(Neptune_Info,neptune_group);
   Pluto = new Planet_Gen(Pluto_Info,pluto_group);
-
+document.getElementById("loadbar").innerHTML = "<b> Loading: </b> 60";
 
 
 
@@ -290,6 +296,8 @@ function init(){
   var SkyboxMesh = CreateSphere('./textures/milkyway.jpg',1e8,50,"Skybox",true);
   SkyboxMesh.material.side= THREE.BackSide;
   skybox_group.add(SkyboxMesh);
+
+  document.getElementById("loadbar").innerHTML = "<b> Loading: </b> 75";
   
 
   // Add the sun.
@@ -320,6 +328,9 @@ function init(){
   this.sun_mesh.name = "sun";
   this.sun_mesh.depthWrite = false;
   sun_group.add(sun_mesh);
+
+  document.getElementById("loadbar").innerHTML = "<b> Loading: </b> 90";
+  
     
   // Define glowing/halo shader effect for sun.
   var customMaterialGlow = new THREE.ShaderMaterial( 
@@ -351,7 +362,11 @@ function init(){
 
   window.addEventListener('resize',onWindowResize,false);
 
+  document.getElementById("loadbar").innerHTML = "<b> Loading: </b> 99";
+  
+
   render();
+  document.getElementById("loadbar").innerHTML="";
 };
 
 function TraceOrbitOutlines(){
