@@ -23,6 +23,15 @@ var camera_position = new THREE.Vector3(0,0,0); // Define where the camera is po
 var lights = [];
 var scene_tree;
 
+var manager = new THREE.LoadingManager();
+
+manager.onProgress = function(item,loaded,total){
+  document.getElementById("loadbar").innerHTML="<b> Loading: </b>" + (loaded/total*100);
+};
+
+manager.onLoad= function(){
+  document.getElementById("loadbar").innerHTML="";
+};
 
 
 
@@ -86,7 +95,7 @@ function init(){
 
  
  
-  document.getElementById("loadbar").innerHTML = "<b> Loading: </b> 0";
+
 
   stats_fps.showPanel(0);
 
@@ -203,7 +212,7 @@ function init(){
 
   scene.add(sun_flare);
   
-  document.getElementById("loadbar").innerHTML = "<b> Loading: </b> 20";
+
 
   //Setup planet objects...
   skybox_group = new THREE.Object3D();
@@ -266,25 +275,19 @@ function init(){
   scene.add(sun_group);
 
 
-  document.getElementById("loadbar").innerHTML = "<b> Loading: </b> 25";
+
 
   // Generate Planets. Objects handle physics as well as adding 3d object to scene.
   Mercury = new Planet_Gen(Mercury_Info,mercury_group);
-  document.getElementById("loadbar").innerHTML = "<b> Loading: </b> 30";
   Venus = new Planet_Gen(Venus_Info,venus_group);
-  document.getElementById("loadbar").innerHTML = "<b> Loading: </b> 35";
   Earth = new Planet_Gen(Earth_Info,earth_group);
-  document.getElementById("loadbar").innerHTML = "<b> Loading: </b> 40";
   Mars = new Planet_Gen(Mars_Info,mars_group);
-  document.getElementById("loadbar").innerHTML = "<b> Loading: </b> 45";
   Moon = new Planet_Gen(Moon_Info,earth_moon_group);
-  Jupiter = new Planet_Gen(Jupiter_Info,jupiter_group);
- 
+  Jupiter = new Planet_Gen(Jupiter_Info,jupiter_group); 
   Saturn = new Planet_Gen(Saturn_Info,saturn_group);
   Uranus = new Planet_Gen(Uranus_Info,uranus_group)
   Neptune = new Planet_Gen(Neptune_Info,neptune_group);
   Pluto = new Planet_Gen(Pluto_Info,pluto_group);
-document.getElementById("loadbar").innerHTML = "<b> Loading: </b> 60";
 
 
 
@@ -297,7 +300,6 @@ document.getElementById("loadbar").innerHTML = "<b> Loading: </b> 60";
   SkyboxMesh.material.side= THREE.BackSide;
   skybox_group.add(SkyboxMesh);
 
-  document.getElementById("loadbar").innerHTML = "<b> Loading: </b> 75";
   
 
   // Add the sun.
@@ -329,7 +331,6 @@ document.getElementById("loadbar").innerHTML = "<b> Loading: </b> 60";
   this.sun_mesh.depthWrite = false;
   sun_group.add(sun_mesh);
 
-  document.getElementById("loadbar").innerHTML = "<b> Loading: </b> 90";
   
     
   // Define glowing/halo shader effect for sun.
@@ -362,7 +363,6 @@ document.getElementById("loadbar").innerHTML = "<b> Loading: </b> 60";
 
   window.addEventListener('resize',onWindowResize,false);
 
-  document.getElementById("loadbar").innerHTML = "<b> Loading: </b> 99";
   
 
   render();
@@ -386,7 +386,7 @@ function TraceOrbitOutlines(){
 
 function CreateSphere(texture_u,radius,polygon_count,name,basic){
 
-  var sphere_loader = new THREE.TextureLoader();
+  var sphere_loader = new THREE.TextureLoader(manager);
   var sphere_texture = sphere_loader.load(texture_u);
   var sphere_geometry=new THREE.SphereGeometry(radius,polygon_count,polygon_count);
   if (basic==true) {
