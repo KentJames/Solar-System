@@ -23,8 +23,10 @@ var camera_position = new THREE.Vector3(0,0,0); // Define where the camera is po
 var lights = [];
 var scene_tree;
 
-var onProgress = function(xhr){
-  document.getElementById("loadbar").innerHTML="<b> Loading: </b>" + (xhr.loaded/xhr.total*100);
+var manager = new THREE.LoadingManager();
+
+manager.onProgress = function(item,loaded,total){
+  document.getElementById("loadbar").innerHTML="<b> Loading: </b>" + (loaded/total*100);
 }
 
 
@@ -389,8 +391,8 @@ function TraceOrbitOutlines(){
 
 function CreateSphere(texture_u,radius,polygon_count,name,basic){
 
-  var sphere_loader = new THREE.TextureLoader();
-  var sphere_texture = sphere_loader.load(texture_u,undefined,onProgress);
+  var sphere_loader = new THREE.TextureLoader(manager);
+  var sphere_texture = sphere_loader.load(texture_u);
   var sphere_geometry=new THREE.SphereGeometry(radius,polygon_count,polygon_count);
   if (basic==true) {
     var sphere_material=new THREE.MeshBasicMaterial({map: sphere_texture});
