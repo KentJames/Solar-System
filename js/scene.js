@@ -114,7 +114,7 @@ function init(){
   controls.noZoom = false;
   controls.noPan = true;
   controls.minDistance = 2000;
-  controls.maxDistance=2e6;
+  controls.maxDistance=0.8e8;
   controls.keys = [ 65, 83, 68 ];
   controls.addEventListener( 'change', render );
   
@@ -296,8 +296,9 @@ function init(){
 
   // Create skydome. 
   
-  var SkyboxMesh = CreateSphere('./textures/milkyway.jpg',1e8,50,"Skybox",true);
+  var SkyboxMesh = CreateSphere('./textures/eso_dark.jpg',1e8,50,"Skybox",true);
   SkyboxMesh.material.side= THREE.BackSide;
+  SkyboxMesh.rotation.x = (Math.PI/180*63);
   skybox_group.add(SkyboxMesh);
 
   
