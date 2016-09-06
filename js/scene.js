@@ -25,8 +25,10 @@ var scene_tree;
 
 var manager = new THREE.LoadingManager();
 
+document.getElementById("loadbar").innerHTML="<b> Loading: </b> 0%";
+
 manager.onProgress = function(item,loaded,total){
-  document.getElementById("loadbar").innerHTML="<b> Loading: </b>" + (loaded/total*100);
+  document.getElementById("loadbar").innerHTML="<b> Loading: </b>" + (loaded/total*100).toFixed(2)+"%";
 };
 
 manager.onLoad= function(){
@@ -94,10 +96,11 @@ animate();
 function init(){
 
  
- 
+  
 
 
   stats_fps.showPanel(0);
+
 
   //Setup Renderer!
   renderer = new THREE.WebGLRenderer({antialias: false, logarithmicDepthBuffer: false,alpha:true}); // Logarithmic depth buffer set to true causes severe shader artifacts.
@@ -112,10 +115,9 @@ function init(){
   controls.zoomSpeed = 0.5;
   controls.panSpeed = 0.8;
   controls.noZoom = false;
-  controls.noPan = true;
+  controls.enablePan = false;
   controls.minDistance = 2000;
   controls.maxDistance=0.8e8;
-  controls.keys = [ 65, 83, 68 ];
   controls.addEventListener( 'change', render );
   
   //Setup GUI
