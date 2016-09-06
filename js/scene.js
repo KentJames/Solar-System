@@ -109,7 +109,9 @@ function init(){
   
   //Setup camera and mouse controls.
   camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight,10,3e8);
-  //camera.position.x=3000;
+  camera.position.x=-15000;
+  camera.position.y=7000;
+  camera.position.z=2000;
   controls = new THREE.OrbitControls( camera ,renderer.domElement);
   controls.rotateSpeed = 1.0;
   controls.zoomSpeed = 0.5;
