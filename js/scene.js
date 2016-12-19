@@ -108,7 +108,9 @@ function init(){
   
   //Setup camera and mouse controls.
   camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight,10,3e8);
-  //camera.position.x=3000;
+  camera.position.x=-15000;
+  camera.position.y=7000;
+  camera.position.z=2000;
   controls = new THREE.OrbitControls( camera ,renderer.domElement);
   controls.rotateSpeed = 1.0;
   controls.zoomSpeed = 0.5;
@@ -444,7 +446,7 @@ function CreateSpriteText(text,colour,name,offset){
   return(SpriteText);
 
 }
-
+// Pretty sure Three.Vector3 makes this redundant. Has a deltaV measurement I am pretty sure.
 function CalculateDistanceFromObject(camera_x,camera_y,camera_z,object_x,object_y,object_z){
 
   var delta_x = Math.abs((camera_x - object_x));
