@@ -35,6 +35,7 @@ function Planet(size,mass,semimajor_axis,semiminor_axis,orbital_eccentricity,orb
 
     this.eccentric_anamoly = function(){return( KeplerSolve(this.orbital_eccentricity,CalculateMT(CalculateN(this.semimajor_axis))))};
     this.true_anamoly = function(){return(CalculateTrueAnamoly(this.eccentric_anamoly(),this.orbital_eccentricity,true)+this.mean_anamoly_epoch)};
+
 };
 
 
