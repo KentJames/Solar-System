@@ -1,6 +1,6 @@
 // Main File. All shader and effects are from stemkowski. 
 
-//Things to do:
+//TODO:
 
 // Rotation? Physically accurate would be ludicrously fast so perhaps slow it down for show purposes.
 // Add showier 3D effects.
@@ -28,11 +28,11 @@ var manager = new THREE.LoadingManager();
 document.getElementById("loadbar").innerHTML="<b> Loading: </b> 0%";
 
 manager.onProgress = function(item,loaded,total){
-  document.getElementById("loadbar").innerHTML="<b> Loading: </b>" + (loaded/total*100).toFixed(2)+"%";
+    document.getElementById("loadbar").innerHTML="<b> Loading: </b>" + (loaded/total*100).toFixed(2)+"%";
 };
 
 manager.onLoad= function(){
-  document.getElementById("loadbar").innerHTML="";
+    document.getElementById("loadbar").innerHTML="";
 };
 
 
@@ -62,7 +62,6 @@ var options = new function(){
   this.PlanetScale = 1;
   this.OrbitScale = 0.02;
   this.CameraFocus = 'Sun';
-//  this.CameraStyle = 'Orbit';
   this.Render_Updated_Scaling = function(){UpdateScene();};
   this.sun_effect_speed = 0.01;
   this.sun_effect_noise = 0.5337;
@@ -604,18 +603,7 @@ function animate() {
 
 function render() {
 
-//  renderer.clear();
   renderer.render( scene, camera );
-//  renderer.clearDepth();
-//  renderer.render( scene_2, camera );
-
-  
-  //mercury_group_orbit.rotation.y += planet_rotation;
-  //venus_group_orbit.rotation.y += planet_rotation/1.5;
-  //earth_group_orbit.rotation.y += planet_rotation/2;
-  //mars_group_orbit.rotation.y += planet_rotation/3;
-  //earth_group.rotation.y += -planet_rotation*10;
-  //mercury_group.rotation.y += planet_rotation;
 
 
 };
@@ -635,65 +623,54 @@ function update(){
   
  //Calculate orbits!
  
-  AdjustPlanetLocation(mercury_group,Mercury);
-  AdjustPlanetLocation(venus_group,Venus);
-  AdjustPlanetLocation(earth_group,Earth);
-  AdjustPlanetLocation(earth_moon_group,Moon);
-  AdjustPlanetLocation(mars_group,Mars);
-  AdjustPlanetLocation(jupiter_group,Jupiter);
-  AdjustPlanetLocation(saturn_group,Saturn);
-  AdjustPlanetLocation(uranus_group,Uranus);
-  AdjustPlanetLocation(neptune_group,Neptune);
-  AdjustPlanetLocation(pluto_group,Pluto);  
- // console.log(mercury_group.position.z)
- if(CalculateDistanceFromObject(camera.position.x,camera.position.y,camera.position.z,0,0,0)>25000){
-   this.sun_mesh.visible = false;
-   this.sunGlow.visible = false;
+    AdjustPlanetLocation(mercury_group,Mercury);
+    AdjustPlanetLocation(venus_group,Venus);
+    AdjustPlanetLocation(earth_group,Earth);
+    AdjustPlanetLocation(earth_moon_group,Moon);
+    AdjustPlanetLocation(mars_group,Mars);
+    AdjustPlanetLocation(jupiter_group,Jupiter);
+    AdjustPlanetLocation(saturn_group,Saturn);
+    AdjustPlanetLocation(uranus_group,Uranus);
+    AdjustPlanetLocation(neptune_group,Neptune);
+    AdjustPlanetLocation(pluto_group,Pluto);  
+if(CalculateDistanceFromObject(camera.position.x,camera.position.y,camera.position.z,0,0,0)>25000){
+    this.sun_mesh.visible = false;
+    this.sunGlow.visible = false;
  }
  else{
-   this.sun_mesh.visible = true;
-   this.sunGlow.visible = true;
+    this.sun_mesh.visible = true;
+    this.sunGlow.visible = true;
  }
  
     
   
-  //Scale Planets. This can definitely be optimised but not an issue atm. Optimise once per scaling update instead of once per frame.
+    //Scale Planets. This can definitely be optimised but not an issue atm. Optimise once per scaling update instead of once per frame.
  
-  ScalePlanet(Mercury,options.PlanetScale);
-  ScalePlanet(Venus,options.PlanetScale);
-  ScalePlanet(Earth,options.PlanetScale);
-  ScalePlanet(Mars,options.PlanetScale);
-  ScalePlanet(Jupiter,options.PlanetScale);
-  ScalePlanet(Saturn,options.PlanetScale);
-  ScalePlanet(Neptune,options.PlanetScale);
-  ScalePlanet(Uranus,options.PlanetScale);
-  ScalePlanet(Pluto,options.PlanetScale);
-  /*
-  ScalePlanet("Venus",venus_group,options.PlanetScale);
-  ScalePlanet("Earth",earth_group,options.PlanetScale);
-  ScalePlanet("Mars",mars_group,options.PlanetScale);
-  ScalePlanet("Jupiter",jupiter_group,options.PlanetScale);
-  ScalePlanet("Saturn",saturn_group,options.PlanetScale);
-  ScalePlanet("Uranus",uranus_group,options.PlanetScale);
-  ScalePlanet("Neptune",neptune_group,options.PlanetScale);
-  ScalePlanet("Pluto",pluto_group,options.PlanetScale);
-  */
-  // Also can be optimised. Same as above.
-  
-  ScaleOverlaySpheres('Mercury_text',mercury_group,mercury_group,ZOOM_SCALE_FACTOR);
-  ScaleOverlaySpheres('Venus_text',venus_group,venus_group,ZOOM_SCALE_FACTOR);
-  ScaleOverlaySpheres('Earth_text',earth_group,earth_group,ZOOM_SCALE_FACTOR);
-  ScaleOverlaySpheres('Moon_text',earth_moon_group,earth_group,ZOOM_SCALE_FACTOR);
-  ScaleOverlaySpheres('Mars_text',mars_group,mars_group,ZOOM_SCALE_FACTOR);
-  ScaleOverlaySpheres('Jupiter_text',jupiter_group,jupiter_group,ZOOM_SCALE_FACTOR);
-  ScaleOverlaySpheres('Saturn_text',saturn_group,saturn_group,ZOOM_SCALE_FACTOR);
-  ScaleOverlaySpheres('Uranus_text',uranus_group,uranus_group,ZOOM_SCALE_FACTOR);
-  ScaleOverlaySpheres('Neptune_text',neptune_group,neptune_group,ZOOM_SCALE_FACTOR);
-  ScaleOverlaySpheres('Pluto_text',pluto_group,pluto_group,ZOOM_SCALE_FACTOR);
-  
+    ScalePlanet(Mercury,options.PlanetScale);
+    ScalePlanet(Venus,options.PlanetScale);
+    ScalePlanet(Earth,options.PlanetScale);
+    ScalePlanet(Mars,options.PlanetScale);
+    ScalePlanet(Jupiter,options.PlanetScale);
+    ScalePlanet(Saturn,options.PlanetScale);
+    ScalePlanet(Neptune,options.PlanetScale);
+    ScalePlanet(Uranus,options.PlanetScale);
+    ScalePlanet(Pluto,options.PlanetScale);
+    // Also can be optimised. Same as above.
 
-  // Give sun a bit of rotation per frame.
-  sun_mesh.rotation.y += 0.0005;
+    ScaleOverlaySpheres('Mercury_text',mercury_group,mercury_group,ZOOM_SCALE_FACTOR);
+    ScaleOverlaySpheres('Venus_text',venus_group,venus_group,ZOOM_SCALE_FACTOR);
+    ScaleOverlaySpheres('Earth_text',earth_group,earth_group,ZOOM_SCALE_FACTOR);
+    ScaleOverlaySpheres('Moon_text',earth_moon_group,earth_group,ZOOM_SCALE_FACTOR);
+    ScaleOverlaySpheres('Mars_text',mars_group,mars_group,ZOOM_SCALE_FACTOR);
+    ScaleOverlaySpheres('Jupiter_text',jupiter_group,jupiter_group,ZOOM_SCALE_FACTOR);
+    ScaleOverlaySpheres('Saturn_text',saturn_group,saturn_group,ZOOM_SCALE_FACTOR);
+    ScaleOverlaySpheres('Uranus_text',uranus_group,uranus_group,ZOOM_SCALE_FACTOR);
+    ScaleOverlaySpheres('Neptune_text',neptune_group,neptune_group,ZOOM_SCALE_FACTOR);
+    ScaleOverlaySpheres('Pluto_text',pluto_group,pluto_group,ZOOM_SCALE_FACTOR);
+
+
+    // Give sun a bit of rotation per frame.
+    sun_mesh.rotation.y += 0.0005;
   
   
   
