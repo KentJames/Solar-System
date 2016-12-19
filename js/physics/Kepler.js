@@ -13,8 +13,8 @@ const SET_SCALING_TIME = 1; //Equalizer as physics has a tendency to run a bit f
 function CalculateN(semimajor_axis,central_mass){
 
 
-  var Orbital_Period = 1/((2*Math.PI)*(Math.sqrt(Math.pow((semimajor_axis*1000),3)/(GRAV_CONSTANT*central_mass))));
-  return(Orbital_Period);
+    var Orbital_Period = 1/((2*Math.PI)*(Math.sqrt(Math.pow((semimajor_axis*1000),3)/(GRAV_CONSTANT*central_mass))));
+    return(Orbital_Period);
 
 }; 
 
@@ -22,50 +22,50 @@ function CalculateN(semimajor_axis,central_mass){
 // Uses Three.js clock. Substitute Clock.getElapsedTime with whatever your chosen timing engine is!
 function CalculateMT(n,t){
   
-  var Mt = n*(Clock.getElapsedTime())*SCALING_TIME*SET_SCALING_TIME;
-  return(Mt);
+    var Mt = n*(Clock.getElapsedTime())*SCALING_TIME*SET_SCALING_TIME;
+    return(Mt);
 };
 
 function KeplerStart(e,M){
   
-  var t33,t35,t34;
-  t34 = (Math.pow(e,2));
-  t35 = e*t34;
-  t33 = Math.cos(M);
-  return((M+((-1/2*t35)+e+(t34+3/2*t33*t35)*t33)*Math.sin(M)));
+    var t33,t35,t34;
+    t34 = (Math.pow(e,2));
+    t35 = e*t34;
+    t33 = Math.cos(M);
+    return((M+((-1/2*t35)+e+(t34+3/2*t33*t35)*t33)*Math.sin(M)));
   
 };
 
 function eps3(e,M,x){
   
-  var t1,t2,t3,t4,t5;
-  t1 = Math.cos(x);
-  t2 = -1+e*t1;
-  t3 = Math.sin(x);
-  t4 = e*t3;
-  t5 = -x+t4+M;
-  t6 = t5/(1/2*t5*t4/t2+t2);
-  return(t5/((1/2*t3 - 1/6*t1*t6)*e*t6+t2));
+    var t1,t2,t3,t4,t5;
+    t1 = Math.cos(x);
+    t2 = -1+e*t1;
+    t3 = Math.sin(x);
+    t4 = e*t3;
+    t5 = -x+t4+M;
+    t6 = t5/(1/2*t5*t4/t2+t2);
+    return(t5/((1/2*t3 - 1/6*t1*t6)*e*t6+t2));
   
 };
 
 function CalculateTrueAnamoly(Eccentric_Anamoly,Eccentricity,Retrograde){
   
-  var e1,e2,e3,e4,e5;
-  e1 = Math.sqrt(1-Eccentricity);
-  e2 = Math.cos(Eccentric_Anamoly/2);
+    var e1,e2,e3,e4,e5;
+    e1 = Math.sqrt(1-Eccentricity);
+    e2 = Math.cos(Eccentric_Anamoly/2);
   
-  e3 = Math.sqrt(1+Eccentricity);
-  e4 = Math.sin(Eccentric_Anamoly/2);
+    e3 = Math.sqrt(1+Eccentricity);
+    e4 = Math.sin(Eccentric_Anamoly/2);
   
-  e5 = 2*Math.atan2(e3*e4,e1*e2);
+    e5 = 2*Math.atan2(e3*e4,e1*e2);
   
-  if(Retrograde == true){
-    return(-e5);
-  }
-  else {
-     return(e5);
-  }
+    if(Retrograde == true){
+        return(-e5);
+    }
+    else {
+        return(e5);
+    }
  
   
   
