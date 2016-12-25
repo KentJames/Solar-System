@@ -375,15 +375,15 @@ function init(){
 
 function TraceOrbitOutlines(){
 
-  orbit_outlines.add(CreateOrbitalLine(0xae2300,Mercury.semimajor_axis_scene(),Mercury.semiminor_axis_scene(),Mercury.periapsis_scene(),Mercury.orbital_inclination,Mercury.longitude_ascending,Mercury.argument_periapsis,Mercury.orbital_eccentricity));
-  orbit_outlines.add(CreateOrbitalLine(0xff0000,Venus.semimajor_axis_scene(),Venus.semiminor_axis_scene(),Venus.periapsis_scene(),Venus.orbital_inclination,Venus.longitude_ascending,Venus.argument_periapsis,Venus.orbital_eccentricity));
-  orbit_outlines.add(CreateOrbitalLine(0xff00ff,Earth.semimajor_axis_scene(),Earth.semiminor_axis_scene(),Earth.periapsis_scene(),Earth.orbital_inclination,Earth.longitude_ascending,Earth.argument_periapsis,Earth.orbital_eccentricity));
-  orbit_outlines.add(CreateOrbitalLine(0xffff00,Mars.semimajor_axis_scene(),Mars.semiminor_axis_scene(),Mars.periapsis_scene(),Mars.orbital_inclination,Mars.longitude_ascending,Mars.argument_periapsis,Mars.orbital_eccentricity));
-  orbit_outlines.add(CreateOrbitalLine(0x00ff00,Jupiter.semimajor_axis_scene(),Jupiter.semiminor_axis_scene(),Jupiter.periapsis_scene(),Jupiter.orbital_inclination,Jupiter.longitude_ascending,Jupiter.argument_periapsis,Jupiter.orbital_eccentricity));
-  orbit_outlines.add(CreateOrbitalLine(0x0000ff,Saturn.semimajor_axis_scene(),Saturn.semiminor_axis_scene(),Saturn.periapsis_scene(),Saturn.orbital_inclination,Saturn.longitude_ascending,Saturn.argument_periapsis,Saturn.orbital_eccentricity));
-  orbit_outlines.add(CreateOrbitalLine(0x00ffff,Uranus.semimajor_axis_scene(),Uranus.semiminor_axis_scene(),Uranus.periapsis_scene(),Uranus.orbital_inclination,Uranus.longitude_ascending,Uranus.argument_periapsis,Uranus.orbital_eccentricity));
-  orbit_outlines.add(CreateOrbitalLine(0xffffff,Neptune.semimajor_axis_scene(),Neptune.semiminor_axis_scene(),Neptune.periapsis_scene(),Neptune.orbital_inclination,Neptune.longitude_ascending,Neptune.argument_periapsis,Neptune.orbital_eccentricity));
-  orbit_outlines.add(CreateOrbitalLine(0xffc7ff,Pluto.semimajor_axis_scene(),Pluto.semiminor_axis_scene(),Pluto.periapsis_scene(),Pluto.orbital_inclination,Pluto.longitude_ascending,Pluto.argument_periapsis,Pluto.orbital_eccentricity));
+  orbit_outlines.add(CreateOrbitalLine(Mercury.semimajor_axis_scene(),Mercury.semiminor_axis_scene(),Mercury.periapsis_scene(),Mercury.orbital_inclination,Mercury.longitude_ascending,Mercury.argument_periapsis,Mercury.orbital_eccentricity));
+  orbit_outlines.add(CreateOrbitalLine(Venus.semimajor_axis_scene(),Venus.semiminor_axis_scene(),Venus.periapsis_scene(),Venus.orbital_inclination,Venus.longitude_ascending,Venus.argument_periapsis,Venus.orbital_eccentricity));
+  orbit_outlines.add(CreateOrbitalLine(Earth.semimajor_axis_scene(),Earth.semiminor_axis_scene(),Earth.periapsis_scene(),Earth.orbital_inclination,Earth.longitude_ascending,Earth.argument_periapsis,Earth.orbital_eccentricity));
+  orbit_outlines.add(CreateOrbitalLine(Mars.semimajor_axis_scene(),Mars.semiminor_axis_scene(),Mars.periapsis_scene(),Mars.orbital_inclination,Mars.longitude_ascending,Mars.argument_periapsis,Mars.orbital_eccentricity));
+  orbit_outlines.add(CreateOrbitalLine(Jupiter.semimajor_axis_scene(),Jupiter.semiminor_axis_scene(),Jupiter.periapsis_scene(),Jupiter.orbital_inclination,Jupiter.longitude_ascending,Jupiter.argument_periapsis,Jupiter.orbital_eccentricity));
+  orbit_outlines.add(CreateOrbitalLine(Saturn.semimajor_axis_scene(),Saturn.semiminor_axis_scene(),Saturn.periapsis_scene(),Saturn.orbital_inclination,Saturn.longitude_ascending,Saturn.argument_periapsis,Saturn.orbital_eccentricity));
+  orbit_outlines.add(CreateOrbitalLine(Uranus.semimajor_axis_scene(),Uranus.semiminor_axis_scene(),Uranus.periapsis_scene(),Uranus.orbital_inclination,Uranus.longitude_ascending,Uranus.argument_periapsis,Uranus.orbital_eccentricity));
+  orbit_outlines.add(CreateOrbitalLine(Neptune.semimajor_axis_scene(),Neptune.semiminor_axis_scene(),Neptune.periapsis_scene(),Neptune.orbital_inclination,Neptune.longitude_ascending,Neptune.argument_periapsis,Neptune.orbital_eccentricity));
+  orbit_outlines.add(CreateOrbitalLine(Pluto.semimajor_axis_scene(),Pluto.semiminor_axis_scene(),Pluto.periapsis_scene(),Pluto.orbital_inclination,Pluto.longitude_ascending,Pluto.argument_periapsis,Pluto.orbital_eccentricity));
   scene.add(orbit_outlines);
 
 }
@@ -405,9 +405,9 @@ function CreateSphere(texture_u,radius,polygon_count,name,basic){
 };
 
 // Creates the orbital outlines on the scene.
-function CreateOrbitalLine(color,semimajor_axis,semiminor_axis,periapsis,orbital_inclination,longitude_ascending,argument_periapsis,eccentricity){
+function CreateOrbitalLine(semimajor_axis,semiminor_axis,periapsis,orbital_inclination,longitude_ascending,argument_periapsis,eccentricity){
 
-    var linematerial = new THREE.LineBasicMaterial({color: color});
+    var linematerial = new THREE.LineBasicMaterial({color: 0x7c7c7c});
     var linegeometry = new THREE.Geometry();
 
 
